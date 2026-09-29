@@ -1381,26 +1381,29 @@ img{max-width:100%;display:block}
 
     <div class="field-block" id="apiSection" style="display:none">
       <div class="field">
-        <label>免费模型预设 <span style="font-weight:400">（选好后自动填URL和模型）</span></label>
+        <label>步骤 ①：选择免费模型（已默认选好）</label>
         <select id="inpPreset">
           <option value="">-- 手动填写 --</option>
-          <option value="zhipu">智谱 AI · GLM-4-Flash（永久免费 / 注册即送额度）</option>
+          <option value="zhipu" selected>智谱 AI · GLM-4-Flash（永久免费 / 注册即送额度）</option>
           <option value="qianfan">百度千帆 · ERNIE-Speed（永久免费 / 需创建应用）</option>
           <option value="silicon">硅基流动 · DeepSeek-V2.5（注册送2000万Token）</option>
         </select>
       </div>
       <div class="field">
-        <label id="lblBaseUrl">API Base URL</label>
-        <input type="text" id="inpBaseUrl" placeholder="https://api.openai.com/v1" autocapitalize="off" spellcheck="false">
+        <label id="lblBaseUrl">API Base URL <span style="font-weight:400">（已自动填写）</span></label>
+        <input type="text" id="inpBaseUrl" placeholder="https://api.openai.com/v1" autocapitalize="off" spellcheck="false" value="https://open.bigmodel.cn/api/paas/v4">
       </div>
       <div class="field">
-        <label>模型名称 <span style="font-weight:400">（Model）</span></label>
-        <input type="text" id="inpModel" placeholder="gpt-4o-mini / gemini-2.0-flash" autocapitalize="off" spellcheck="false">
+        <label>模型名称 <span style="font-weight:400">（已自动填写）</span></label>
+        <input type="text" id="inpModel" placeholder="gpt-4o-mini / gemini-2.0-flash" autocapitalize="off" spellcheck="false" value="glm-4-flash">
       </div>
       <div class="field">
-        <label>API Key</label>
+        <label>步骤 ②：粘贴 API Key <span style="font-weight:400; color: var(--err)">（必填）</span></label>
         <input type="password" id="inpKey" placeholder="sk-…" autocomplete="off" spellcheck="false">
-        <span class="hint">Key 仅保存在本机浏览器中，不会上传到任何服务器。部分平台免Key也可用。</span>
+        <span class="hint">没有 Key？<a href="https://open.bigmodel.cn/" target="_blank" style="color:var(--acc-1)">点击注册智谱AI（免费）</a> → 创建 API Key → 复制粘贴到这里</span>
+      </div>
+      <div class="field" style="background:rgba(59,130,246,0.08); border:1px solid rgba(59,130,246,0.2); border-radius:10px; padding:10px 12px; margin-top:8px">
+        <span class="hint" style="color:var(--txt-2); line-height:1.6"><b style="color:var(--txt-1)">只需两步：</b><br>1️⃣ 上方下拉框已选好「智谱AI」（永久免费）<br>2️⃣ 在「API Key」框粘贴你的 Key（<a href="https://open.bigmodel.cn/" target="_blank" style="color:var(--acc-1)">点击这里免费获取</a>）<br>💡 Key 只保存在你的手机/电脑里，不会上传到任何地方</span>
       </div>
       <button class="ghost-btn" id="btnProxyMacro" type="button">支持 Azure / 千帆 / 本地服务 · 点击查看格式</button>
     </div>
@@ -1778,15 +1781,34 @@ const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;'
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 
 function switchToApiMode() {
-  state.settings.provider = 'zhipu';
+  openDrawer();
+  state.settings.provider = 'openai';
   safeStore.set('ays_settings', state.settings);
   if (typeof applySettingsToUI === 'function') applySettingsToUI();
-  toast('已切换到智谱AI模式：请在设置中配置 API Key', 'info', 4200);
-  openDrawer();
+  if (el.inpPreset) {
+    el.inpPreset.value = 'zhipu';
+    el.inpPreset.dispatchEvent(new Event('change'));
+  }
+  setTimeout(() => { if (el.inpKey) el.inpKey.focus(); }, 300);
 }
 
 function showSetupGuide() {
-  switchToApiMode();
+  // 打开设置面板
+  openDrawer();
+  // 切换到在线模型 tab
+  state.settings.provider = 'openai';
+  safeStore.set('ays_settings', state.settings);
+  if (typeof applySettingsToUI === 'function') applySettingsToUI();
+  // 自动选择智谱AI预设
+  if (el.inpPreset) {
+    el.inpPreset.value = 'zhipu';
+    el.inpPreset.dispatchEvent(new Event('change'));
+  }
+  // 聚焦到 Key 输入框
+  setTimeout(() => {
+    if (el.inpKey) el.inpKey.focus();
+    toast('已选择智谱AI，请粘贴 API Key', 'info', 3000);
+  }, 300);
 }
 
 function debounce(fn, ms) {
@@ -2509,7 +2531,7 @@ const ICONS = {
 
 function renderWelcome() {
   const hasKey = !!(state.settings.key || '').trim();
-  const needKey = state.settings.provider === 'zhipu' && !hasKey;
+  const needKey = !hasKey; // 只要没有Key就显示引导
   const keyHint = needKey
     ? '<div style="margin-top:16px;padding:14px 16px;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.3);border-radius:12px;text-align:left"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:18px">🔑</span><span style="font-weight:600;color:var(--acc-1);font-size:14px">首次使用，只需 30 秒配置</span></div><p style="margin:0;font-size:13px;color:var(--txt-2);line-height:1.6">智答AI 使用智谱 AI 永久免费的 GLM-4-Flash 模型。点击下方按钮，1 分钟注册获取 API Key，即可开始使用。</p><button onclick="showSetupGuide()" style="margin-top:10px;padding:8px 18px;border-radius:10px;border:none;background:var(--acc-1);color:#fff;font-size:13px;font-weight:600;cursor:pointer">⚡ 获取免费 API Key</button></div>'
     : '';
