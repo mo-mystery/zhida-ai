@@ -1778,11 +1778,15 @@ const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;'
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 
 function switchToApiMode() {
-  state.settings.provider = 'openai';
+  state.settings.provider = 'zhipu';
   safeStore.set('ays_settings', state.settings);
   if (typeof applySettingsToUI === 'function') applySettingsToUI();
-  toast('已切换到 OpenAI 兼容模式：请在设置中配置 API Key', 'info', 4200);
+  toast('已切换到智谱AI模式：请在设置中配置 API Key', 'info', 4200);
   openDrawer();
+}
+
+function showSetupGuide() {
+  switchToApiMode();
 }
 
 function debounce(fn, ms) {
@@ -1850,7 +1854,7 @@ function closeModal(val) {
 
 /* ---------- 应用状态 ---------- */
 const defaults = {
-  provider: 'local',
+  provider: 'zhipu',
   localModel: 'qwen2.5-0.5b', // 默认使用已下载的0.5B模型
   baseUrl: 'https://api.openai.com/v1',
   baseUrlGemini: 'https://generativelanguage.googleapis.com/v1beta',
@@ -2504,6 +2508,11 @@ const ICONS = {
 };
 
 function renderWelcome() {
+  const hasKey = !!(state.settings.key || '').trim();
+  const needKey = state.settings.provider === 'zhipu' && !hasKey;
+  const keyHint = needKey
+    ? '<div style="margin-top:16px;padding:14px 16px;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.3);border-radius:12px;text-align:left"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:18px">🔑</span><span style="font-weight:600;color:var(--acc-1);font-size:14px">首次使用，只需 30 秒配置</span></div><p style="margin:0;font-size:13px;color:var(--txt-2);line-height:1.6">智答AI 使用智谱 AI 永久免费的 GLM-4-Flash 模型。点击下方按钮，1 分钟注册获取 API Key，即可开始使用。</p><button onclick="showSetupGuide()" style="margin-top:10px;padding:8px 18px;border-radius:10px;border:none;background:var(--acc-1);color:#fff;font-size:13px;font-weight:600;cursor:pointer">⚡ 获取免费 API Key</button></div>'
+    : '';
   el.chat.innerHTML = '<div class="welcome">' +
     '<div class="hero-mark">' + ICONS.ai + '</div>' +
     '<h2>上传即解 · 随问随答</h2>' +
@@ -2512,7 +2521,7 @@ function renderWelcome() {
       '<button class="chip" data-demo="1">📷 上传图片题目</button>' +
       '<button class="chip" data-demo="2">🔗 粘贴网址</button>' +
       '<button class="chip" data-demo="3">⌨️ 直接打字提问</button>' +
-    '</div></div>';
+    '</div>' + keyHint + '</div>';
   $$('.chip', el.chat).forEach(c => c.addEventListener('click', () => {
     const d = c.dataset.demo;
     if (d === '1') {
