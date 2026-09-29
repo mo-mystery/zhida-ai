@@ -1,0 +1,3142 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="智答AI - 拍照传题，秒出详解。支持文件、PDF、网址输入，双模式答题，可继续追问。">
+<title>智答AI · 拍照传题，秒出详解</title>
+<style>
+/* ========== 统一基础样式 ========== */
+:root{
+  --bg-0:#070b12;
+  --bg-1:#0b101a;
+  --bg-2:#111827;
+  --bg-3:#1a2434;
+  --line-1:rgba(148,163,184,.14);
+  --line-2:rgba(148,163,184,.28);
+  --txt-1:#e6edf7;
+  --txt-2:#94a3b8;
+  --txt-3:#64748b;
+  --acc-1:#22d3ee;
+  --acc-2:#3b82f6;
+  --acc-grad:linear-gradient(120deg,#22d3ee 0%,#3b82f6 100%);
+  --ok:#34d399;
+  --warn:#fbbf24;
+  --err:#fb7185;
+  --radius:14px;
+  --radius-sm:10px;
+  --shadow-1:0 10px 40px rgba(2,6,17,.5);
+  --font:ui-sans-serif,"SF Pro Display",-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg-0);color:var(--txt-1);font-family:var(--font);
+  line-height:1.6;min-height:100vh;display:flex;flex-direction:column;
+}
+body::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(50rem 50rem at 80% -10%,rgba(34,211,238,.08),transparent 60%),
+    radial-gradient(40rem 40rem at 10% 110%,rgba(59,130,246,.10),transparent 55%);
+}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+
+/* ========== 统一导航 ========== */
+.site-nav{
+  position:sticky;top:0;z-index:100;
+  background:rgba(7,11,18,.85);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--line-1);
+}
+.site-nav-inner{
+  max-width:1100px;margin:0 auto;padding:12px 20px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+}
+.site-brand{
+  display:flex;align-items:center;gap:8px;font-weight:700;font-size:16px;color:var(--txt-1);
+}
+.site-brand svg{color:var(--acc-1)}
+.site-nav-links{display:flex;align-items:center;gap:4px}
+.site-nav-links a{
+  padding:7px 14px;border-radius:999px;font-size:13px;color:var(--txt-2);
+  transition:all .2s ease;
+}
+.site-nav-links a:hover{color:var(--txt-1);background:var(--bg-2)}
+.site-nav-links a.active{background:var(--acc-grad);color:#041018;font-weight:650}
+.site-nav-toggle{display:none}
+
+@media(max-width:640px){
+  .site-nav-links{display:none;position:absolute;top:100%;left:0;right:0;background:var(--bg-1);border-bottom:1px solid var(--line-1);padding:12px 20px;flex-direction:column;align-items:stretch;gap:4px}
+  .site-nav-links.open{display:flex}
+  .site-nav-links a{text-align:center}
+  .site-nav-toggle{display:block;width:36px;height:36px;border-radius:8px;display:grid;place-items:center;color:var(--txt-2);border:1px solid var(--line-1);cursor:pointer}
+  .site-nav-toggle:hover{color:var(--txt-1);background:var(--bg-2)}
+}
+
+/* ========== 统一页脚 ========== */
+.site-footer{
+  background:var(--bg-1);border-top:1px solid var(--line-1);
+  padding:30px 20px;margin-top:auto;position:relative;z-index:1;
+}
+.site-footer-inner{
+  max-width:1100px;margin:0 auto;
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  text-align:center;
+}
+.footer-brand{display:flex;align-items:center;gap:6px;font-weight:650;color:var(--txt-1);font-size:14px}
+.footer-brand svg{color:var(--acc-1)}
+.footer-links{display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
+.footer-links a{font-size:12px;color:var(--txt-3);transition:color .2s}
+.footer-links a:hover{color:var(--acc-1)}
+.footer-copy{font-size:11px;color:var(--txt-3)}
+
+/* ========== 视图切换 ========== */
+.view{display:none;position:relative;z-index:1}
+.view.active{display:block}
+
+/* ========== 首页样式 ========== */
+
+/* ========== 设计令牌 ========== */
+:root{
+  --bg-0:#070b12;
+  --bg-1:#0b101a;
+  --bg-2:#111827;
+  --bg-3:#1a2434;
+  --line-1:rgba(148,163,184,.14);
+  --line-2:rgba(148,163,184,.28);
+  --txt-1:#e6edf7;
+  --txt-2:#94a3b8;
+  --txt-3:#64748b;
+  --acc-1:#22d3ee;
+  --acc-2:#3b82f6;
+  --acc-grad:linear-gradient(120deg,#22d3ee 0%,#3b82f6 100%);
+  --ok:#34d399;
+  --warn:#fbbf24;
+  --radius:14px;
+  --radius-sm:10px;
+  --shadow-1:0 10px 40px rgba(2,6,17,.5);
+  --font:ui-sans-serif,"SF Pro Display",-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg-0);color:var(--txt-1);font-family:var(--font);
+  line-height:1.6;overflow-x:hidden;
+}
+
+/* 背景氛围 */
+body::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(50rem 50rem at 80% -10%,rgba(34,211,238,.08),transparent 60%),
+    radial-gradient(40rem 40rem at 10% 110%,rgba(59,130,246,.10),transparent 55%),
+    radial-gradient(30rem 30rem at 50% 50%,rgba(15,23,42,.5),transparent 100%);
+}
+body::after{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.35;
+  background-image:linear-gradient(rgba(148,163,184,.04) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(148,163,184,.04) 1px,transparent 1px);
+  background-size:48px 48px;
+  -webkit-mask-image:radial-gradient(70% 60% at 50% 30%,#000 0%,transparent 100%);
+          mask-image:radial-gradient(70% 60% at 50% 30%,#000 0%,transparent 100%);
+}
+
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+
+/* ========== 导航栏 ========== */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(7,11,18,.75);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--line-1);
+}
+.nav-inner{
+  max-width:1100px;margin:0 auto;padding:14px 20px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+}
+.nav-brand{
+  display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;
+  letter-spacing:.3px;
+}
+.nav-brand .mark{
+  width:36px;height:36px;border-radius:10px;flex:none;
+  background:linear-gradient(135deg,rgba(34,211,238,.12),rgba(59,130,246,.18));
+  border:1px solid rgba(34,211,238,.25);
+  display:grid;place-items:center;
+  box-shadow:0 4px 16px rgba(34,211,238,.20);
+}
+.nav-brand .mark svg{width:20px;height:20px}
+.nav-links{display:flex;align-items:center;gap:8px}
+.nav-links a{
+  padding:8px 16px;border-radius:999px;font-size:14px;color:var(--txt-2);
+  transition:all .2s ease;
+}
+.nav-links a:hover{color:var(--txt-1);background:var(--bg-2)}
+.nav-links .btn-primary{
+  background:var(--acc-grad);color:#041018;font-weight:650;
+  box-shadow:0 4px 16px rgba(34,211,238,.30);
+}
+.nav-links .btn-primary:hover{box-shadow:0 6px 24px rgba(34,211,238,.45);transform:translateY(-1px)}
+.nav-toggle{display:none}
+
+@media(max-width:640px){
+  .nav-links{display:none;position:absolute;top:100%;left:0;right:0;background:var(--bg-1);border-bottom:1px solid var(--line-1);padding:12px 20px;flex-direction:column;align-items:stretch;gap:4px}
+  .nav-links.open{display:flex}
+  .nav-links a{text-align:center}
+  .nav-toggle{display:block;width:36px;height:36px;border-radius:8px;display:grid;place-items:center;color:var(--txt-2);border:1px solid var(--line-1)}
+  .nav-toggle:hover{color:var(--txt-1);background:var(--bg-2)}
+}
+
+/* ========== 通用区块 ========== */
+.section{position:relative;z-index:1;padding:100px 20px}
+.section-inner{max-width:1100px;margin:0 auto}
+.section-title{
+  font-size:32px;font-weight:700;text-align:center;margin-bottom:12px;
+  background:linear-gradient(135deg,var(--txt-1),var(--acc-1));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.section-subtitle{
+  font-size:16px;color:var(--txt-2);text-align:center;max-width:560px;margin:0 auto 60px;
+}
+@media(max-width:640px){
+  .section{padding:70px 16px}
+  .section-title{font-size:26px}
+  .section-subtitle{font-size:14px;margin-bottom:40px}
+}
+
+/* ========== Hero ========== */
+.hero{
+  min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;
+  text-align:center;padding:120px 20px 80px;position:relative;z-index:1;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.2);
+  padding:6px 16px;border-radius:999px;font-size:13px;color:var(--acc-1);margin-bottom:28px;
+}
+.hero-badge .dot{width:8px;height:8px;border-radius:50%;background:var(--ok);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.hero h1{
+  font-size:52px;font-weight:800;line-height:1.15;letter-spacing:-1px;margin-bottom:20px;
+  background:linear-gradient(135deg,#fff 0%,var(--acc-1) 60%,var(--acc-2) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.hero p{font-size:18px;color:var(--txt-2);max-width:520px;margin:0 auto 36px;line-height:1.7}
+.hero-cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;padding:14px 32px;border-radius:999px;
+  font-size:16px;font-weight:650;transition:all .25s ease;cursor:pointer;border:none;
+}
+.btn-large{padding:16px 36px;font-size:17px}
+.btn-primary{
+  background:var(--acc-grad);color:#041018;
+  box-shadow:0 8px 32px rgba(34,211,238,.35),inset 0 1px 0 rgba(255,255,255,.3);
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(34,211,238,.50)}
+.btn-secondary{
+  background:var(--bg-2);color:var(--txt-1);border:1px solid var(--line-1);
+}
+.btn-secondary:hover{background:var(--bg-3);border-color:var(--line-2);transform:translateY(-2px)}
+
+.hero-demo{
+  margin-top:60px;width:100%;max-width:720px;
+  background:linear-gradient(180deg,var(--bg-2),var(--bg-1));
+  border:1px solid var(--line-1);border-radius:var(--radius);
+  padding:20px;box-shadow:var(--shadow-1);
+  position:relative;overflow:hidden;
+}
+.hero-demo::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--acc-1),transparent);
+}
+.demo-header{
+  display:flex;align-items:center;gap:8px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--line-1);
+}
+.demo-dot{width:10px;height:10px;border-radius:50%}
+.demo-dot:nth-child(1){background:#fb7185}
+.demo-dot:nth-child(2){background:#fbbf24}
+.demo-dot:nth-child(3){background:#34d399}
+.demo-body{
+  background:var(--bg-0);border-radius:var(--radius-sm);padding:16px;
+  font-family:ui-monospace,monospace;font-size:13px;line-height:1.8;color:var(--txt-2);
+}
+.demo-body .prompt{color:var(--acc-1)}
+.demo-body .answer{color:var(--txt-1)}
+.demo-body .step{color:var(--txt-3);margin-left:16px;display:block}
+
+@media(max-width:640px){
+  .hero h1{font-size:36px}
+  .hero p{font-size:15px}
+  .btn-large{padding:14px 28px;font-size:15px}
+}
+
+/* ========== 功能特性 ========== */
+.features-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;
+}
+.feature-card{
+  background:linear-gradient(180deg,var(--bg-2),var(--bg-1));
+  border:1px solid var(--line-1);border-radius:var(--radius);
+  padding:28px;transition:all .3s ease;position:relative;overflow:hidden;
+}
+.feature-card::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(34,211,238,.3),transparent);
+  opacity:0;transition:opacity .3s ease;
+}
+.feature-card:hover{transform:translateY(-4px);border-color:var(--line-2);box-shadow:var(--shadow-1)}
+.feature-card:hover::before{opacity:1}
+.feature-icon{
+  width:48px;height:48px;border-radius:12px;margin-bottom:18px;
+  background:linear-gradient(135deg,rgba(34,211,238,.1),rgba(59,130,246,.15));
+  border:1px solid rgba(34,211,238,.2);
+  display:grid;place-items:center;
+}
+.feature-icon svg{width:24px;height:24px;color:var(--acc-1)}
+.feature-card h3{font-size:18px;font-weight:650;margin-bottom:10px}
+.feature-card p{font-size:14px;color:var(--txt-2);line-height:1.7}
+
+/* ========== 使用流程 ========== */
+.steps{
+  display:flex;gap:24px;justify-content:center;flex-wrap:wrap;
+}
+.step-card{
+  flex:1;min-width:260px;max-width:320px;
+  background:var(--bg-1);border:1px solid var(--line-1);
+  border-radius:var(--radius);padding:32px 24px;text-align:center;
+  position:relative;transition:all .3s ease;
+}
+.step-card:hover{border-color:var(--line-2);transform:translateY(-3px)}
+.step-num{
+  width:48px;height:48px;border-radius:50%;margin:0 auto 18px;
+  background:var(--acc-grad);color:#041018;font-size:20px;font-weight:700;
+  display:grid;place-items:center;
+  box-shadow:0 8px 24px rgba(34,211,238,.30);
+}
+.step-card h3{font-size:18px;font-weight:650;margin-bottom:10px}
+.step-card p{font-size:14px;color:var(--txt-2);line-height:1.7}
+.step-arrow{
+  display:flex;align-items:center;color:var(--txt-3);font-size:24px;
+}
+@media(max-width:768px){
+  .steps{flex-direction:column;align-items:center}
+  .step-arrow{transform:rotate(90deg);margin:8px 0}
+  .step-card{max-width:100%;width:100%}
+}
+
+/* ========== CTA ========== */
+.cta-section{
+  background:linear-gradient(180deg,transparent,rgba(34,211,238,.04));
+  border-top:1px solid var(--line-1);border-bottom:1px solid var(--line-1);
+}
+.cta-box{
+  background:linear-gradient(135deg,rgba(34,211,238,.06),rgba(59,130,246,.08));
+  border:1px solid rgba(34,211,238,.15);border-radius:var(--radius);
+  padding:60px 40px;text-align:center;
+}
+.cta-box h2{font-size:28px;font-weight:700;margin-bottom:12px}
+.cta-box p{font-size:16px;color:var(--txt-2);margin-bottom:28px}
+
+/* ========== 页脚 ========== */
+.footer{
+  padding:50px 20px 30px;text-align:center;color:var(--txt-3);font-size:13px;
+  border-top:1px solid var(--line-1);
+}
+.footer-links{display:flex;gap:20px;justify-content:center;margin-bottom:16px;flex-wrap:wrap}
+.footer-links a{color:var(--txt-2);transition:color .2s}
+.footer-links a:hover{color:var(--acc-1)}
+
+/* ========== 动画 ========== */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(30px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.anim{opacity:0;animation:fadeUp .7s ease forwards}
+.anim-d1{animation-delay:.1s}
+.anim-d2{animation-delay:.2s}
+.anim-d3{animation-delay:.3s}
+
+/* 滚动显现 */
+.reveal{opacity:0;transform:translateY(40px);transition:all .7s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+
+/* ========== 答题页样式 ========== */
+
+/* ============ 设计令牌：科技深色工作台 ============ */
+:root{
+  --bg-0:#070b12;          /* 页面底色 */
+  --bg-1:#0b101a;          /* 表面1 */
+  --bg-2:#111827;          /* 表面2 */
+  --bg-3:#1a2434;          /* 表面3/悬浮 */
+  --line-1:rgba(148,163,184,.14);
+  --line-2:rgba(148,163,184,.28);
+  --txt-1:#e6edf7;         /* 主文字 */
+  --txt-2:#94a3b8;         /* 次级文字 */
+  --txt-3:#64748b;         /* 弱文字 */
+  --acc-1:#22d3ee;         /* 青 */
+  --acc-2:#3b82f6;         /* 蓝 */
+  --acc-grad:linear-gradient(120deg,#22d3ee 0%,#3b82f6 100%);
+  --ok:#34d399;
+  --warn:#fbbf24;
+  --err:#fb7185;
+  --user-grad:linear-gradient(135deg,rgba(34,211,238,.16),rgba(59,130,246,.20));
+  --radius:10px;
+  --radius-sm:8px;
+  --shadow-1:0 10px 30px rgba(2,6,17,.45);
+  --font:ui-sans-serif,"SF Pro Display",-apple-system,"Segoe UI","PingFang SC","HarmonyOS Sans SC","Microsoft YaHei",sans-serif;
+  --mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,Consolas,"Courier New",monospace;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  margin:0;background:var(--bg-0);color:var(--txt-1);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans SC","PingFang SC","Microsoft YaHei",Arial,sans-serif;
+  line-height:1.6;min-height:100vh;display:flex;flex-direction:column;
+}
+/* 背景氛围：网格 + 光晕 */
+body::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(42rem 42rem at 78% -12%,rgba(34,211,238,.10),transparent 62%),
+    radial-gradient(38rem 38rem at 8% 108%,rgba(59,130,246,.12),transparent 60%),
+    radial-gradient(28rem 28rem at 50% 50%,rgba(15,23,42,.55),transparent 100%);
+}
+body::after{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;
+  background-image:linear-gradient(rgba(148,163,184,.05) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(148,163,184,.05) 1px,transparent 1px);
+  background-size:44px 44px;
+  -webkit-mask-image:radial-gradient(70% 60% at 50% 30%,#000 0%,transparent 100%);
+          mask-image:radial-gradient(70% 60% at 50% 30%,#000 0%,transparent 100%);
+}
+button{font-family:inherit;color:inherit;background:none;border:none;cursor:pointer}
+input,textarea{font-family:inherit;color:inherit}
+
+/* ============ 网站导航 ============ */
+.site-nav{
+  position:sticky;top:0;z-index:100;
+  background:rgba(7,11,18,.85);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--line-1);
+}
+.site-nav-inner{
+  max-width:1100px;margin:0 auto;padding:12px 20px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+}
+.site-brand{
+  display:flex;align-items:center;gap:8px;font-weight:700;font-size:16px;color:var(--txt-1);
+}
+.site-brand svg{color:var(--acc-1)}
+.site-links{display:flex;align-items:center;gap:4px}
+.site-links a{
+  padding:7px 14px;border-radius:999px;font-size:13px;color:var(--txt-2);
+  transition:all .2s ease;
+}
+.site-links a:hover{color:var(--txt-1);background:var(--bg-2)}
+.site-links a.active{background:var(--acc-grad);color:#041018;font-weight:650}
+
+/* ============ 面包屑 ============ */
+.breadcrumb{
+  background:var(--bg-1);border-bottom:1px solid var(--line-1);
+}
+.breadcrumb-inner{
+  max-width:1100px;margin:0 auto;padding:8px 20px;
+  display:flex;align-items:center;gap:10px;font-size:12px;color:var(--txt-3);
+}
+.breadcrumb-inner a{color:var(--txt-2);transition:color .2s}
+.breadcrumb-inner a:hover{color:var(--acc-1)}
+
+/* ============ 网站页脚 ============ */
+.site-footer{
+  background:var(--bg-1);border-top:1px solid var(--line-1);
+  padding:24px 20px;margin-top:auto;
+}
+.site-footer-inner{
+  max-width:1100px;margin:0 auto;
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  text-align:center;
+}
+.footer-brand{display:flex;align-items:center;gap:6px;font-weight:650;color:var(--txt-1);font-size:14px}
+.footer-brand svg{color:var(--acc-1)}
+.footer-links{display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
+.footer-links a{font-size:12px;color:var(--txt-3);transition:color .2s}
+.footer-links a:hover{color:var(--acc-1)}
+.footer-copy{font-size:11px;color:var(--txt-3)}
+
+/* ============ 应用外壳 ============ */
+#app{position:relative;z-index:1;height:100%;display:flex;flex-direction:column;max-width:860px;margin:0 auto;padding:0 16px}
+@media(min-width:720px){#app{padding:0 24px}}
+
+/* ---------- 顶栏 ---------- */
+header{
+  display:flex;align-items:center;gap:12px;
+  padding:calc(12px + var(--safe-top)) 2px 12px;
+  border-bottom:1px solid var(--line-1);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+}
+.brand{display:flex;align-items:center;gap:10px;min-width:0;flex:1}
+.brand-mark{
+  width:38px;height:38px;border-radius:10px;flex:none;
+  background:linear-gradient(135deg,rgba(34,211,238,.08),rgba(59,130,246,.12));
+  border:1px solid rgba(34,211,238,.25);
+  display:grid;place-items:center;
+  box-shadow:0 4px 16px rgba(34,211,238,.20),inset 0 1px 0 rgba(255,255,255,.15);
+  transition:transform .3s ease,box-shadow .3s ease;
+}
+.brand-mark:hover{transform:scale(1.08) rotate(-5deg);box-shadow:0 6px 24px rgba(34,211,238,.35)}
+.brand-mark svg{width:22px;height:22px;display:block}
+.brand h1{font-size:16px;font-weight:650;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand .sub{font-size:11px;color:var(--txt-3);letter-spacing:.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand-txt{display:flex;flex-direction:column;min-width:0}
+.mode-pill{
+  display:flex;align-items:center;gap:3px;flex:none;
+  background:rgba(17,24,39,.8);border:1px solid var(--line-1);
+  padding:4px;border-radius:999px;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+}
+.mode-pill button{
+  padding:7px 14px;border-radius:999px;font-size:12.5px;color:var(--txt-2);
+  transition:all .25s cubic-bezier(.4,0,.2,1);white-space:nowrap;position:relative;
+}
+.mode-pill button:hover{color:var(--txt-1)}
+.mode-pill button.active{
+  background:var(--acc-grad);color:#041018;font-weight:650;
+  box-shadow:0 4px 16px rgba(34,211,238,.35),inset 0 1px 0 rgba(255,255,255,.3);
+  transform:scale(1.02);
+}
+.icon-btn{
+  width:38px;height:38px;border-radius:9px;flex:none;display:grid;place-items:center;
+  color:var(--txt-2);border:1px solid transparent;transition:all .2s ease;
+}
+.icon-btn:hover{color:var(--txt-1);background:var(--bg-2);border-color:var(--line-1)}
+.icon-btn svg{width:19px;height:19px}
+
+/* ---------- 主对话区 ---------- */
+main{
+  flex:1;overflow-y:auto;overscroll-behavior:contain;
+  padding:22px 2px 8px;scroll-behavior:smooth;
+  -webkit-overflow-scrolling:touch;
+}
+main::-webkit-scrollbar{width:6px}
+main::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:3px}
+
+.welcome{
+  min-height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;
+  text-align:center;gap:12px;padding:32px 16px;animation:fadeUp .6s ease both;
+}
+.welcome .hero-mark{
+  width:90px;height:90px;border-radius:24px;margin-bottom:4px;
+  background:linear-gradient(135deg,rgba(34,211,238,.15),rgba(59,130,246,.20));
+  border:1.5px solid rgba(34,211,238,.3);
+  display:grid;place-items:center;
+  box-shadow:0 20px 60px rgba(34,211,238,.25),inset 0 1px 0 rgba(255,255,255,.2);
+}
+.welcome .hero-mark svg{width:44px;height:44px}
+.welcome h2{font-size:26px;font-weight:700;letter-spacing:.5px;background:linear-gradient(135deg,var(--txt-1),var(--acc-1));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.welcome p{font-size:14px;color:var(--txt-2);max-width:440px;line-height:1.7}
+.welcome .chips{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:18px}
+.chip{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:12.5px;color:var(--txt-2);
+  background:var(--bg-2);border:1px solid var(--line-1);
+  padding:7px 12px;border-radius:999px;transition:all .2s ease;
+}
+.chip:hover{color:var(--txt-1);border-color:var(--line-2);transform:translateY(-1px)}
+.chip svg{width:14px;height:14px;color:var(--acc-1)}
+
+/* 消息 */
+.msg{display:flex;gap:12px;margin:0 0 22px;animation:fadeUp .4s ease both}
+.msg .avatar{
+  width:34px;height:34px;border-radius:10px;flex:none;display:grid;place-items:center;margin-top:2px;
+  transition:transform .3s ease;
+}
+.msg.user .avatar{background:linear-gradient(135deg,var(--bg-3),rgba(59,130,246,.15));border:1px solid rgba(59,130,246,.3);color:var(--txt-2)}
+.msg.assistant .avatar{background:var(--acc-grad);box-shadow:0 6px 20px rgba(34,211,238,.35)}
+.msg .avatar:hover{transform:scale(1.1) rotate(5deg)}
+.msg .avatar svg{width:17px;height:17px}
+.msg .bubble{
+  flex:1;min-width:0;background:rgba(11,16,26,.7);border:1px solid var(--line-1);
+  border-radius:14px;padding:14px 16px;overflow-wrap:break-word;word-break:break-word;
+  box-shadow:0 4px 16px rgba(2,6,17,.3);
+  transition:box-shadow .2s ease;
+}
+.msg .bubble:hover{box-shadow:0 6px 24px rgba(2,6,17,.4)}
+.msg.user .bubble{background:linear-gradient(135deg,rgba(34,211,238,.08),rgba(59,130,246,.12));border-color:rgba(59,130,246,.25);box-shadow:0 4px 16px rgba(59,130,246,.15)}
+.msg .meta{font-size:11px;color:var(--txt-3);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.msg.user .meta{justify-content:flex-end}
+.badge-mode{
+  display:inline-block;font-size:10px;letter-spacing:.6px;padding:1.5px 7px;
+  border-radius:999px;border:1px solid var(--line-2);color:var(--txt-2);
+}
+.badge-mode.proc{border-color:rgba(34,211,238,.5);color:var(--acc-1)}
+.attach-chip{
+  display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--txt-2);
+  background:var(--bg-2);border:1px solid var(--line-1);padding:3px 9px;border-radius:999px;margin-bottom:8px;
+}
+.attach-chip svg{width:12px;height:12px;color:var(--acc-1)}
+
+/* 流式光标 */
+.cursor{
+  display:inline-block;width:7px;height:15px;vertical-align:-2px;margin-left:2px;
+  background:var(--acc-1);border-radius:2px;animation:blink 1s steps(2) infinite;
+}
+@keyframes blink{0%,60%{opacity:1}61%,100%{opacity:0}}
+
+/* ---------- 底部输入区 ---------- */
+footer{
+  padding:10px 0 calc(12px + var(--safe-bottom));
+  border-top:1px solid var(--line-1);
+  background:linear-gradient(180deg,transparent,var(--bg-0) 30%);
+}
+.composer{
+  background:rgba(17,24,39,.85);border:1px solid var(--line-1);
+  border-radius:18px;padding:12px 12px 10px;
+  transition:border-color .2s ease,box-shadow .2s ease,transform .2s ease;
+  box-shadow:var(--shadow-1);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+}
+.composer:focus-within{border-color:rgba(34,211,238,.4);box-shadow:0 0 0 4px rgba(34,211,238,.08),0 8px 32px rgba(2,6,17,.5);transform:translateY(-1px)}
+.attach-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+.attach-pill{
+  display:inline-flex;align-items:center;gap:6px;max-width:100%;
+  background:var(--bg-3);border:1px solid var(--line-1);border-radius:999px;
+  padding:4px 8px 4px 10px;font-size:12px;color:var(--txt-2);
+}
+.attach-pill b{font-weight:550;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px}
+.attach-pill .x{
+  width:16px;height:16px;border-radius:50%;display:grid;place-items:center;flex:none;
+  color:var(--txt-3);transition:all .15s ease;
+}
+.attach-pill .x:hover{background:var(--err);color:#fff}
+.attach-pill .x svg{width:10px;height:10px}
+.attach-pill .ocr{
+  font-size:11px;font-weight:600;white-space:nowrap;
+  color:var(--warn);display:inline-flex;align-items:center;gap:3px;
+}
+.attach-pill .ocr.ok{color:var(--ok)}
+.attach-pill .ocr.fail{color:var(--err)}
+.attach-pill .ocr .sp{width:9px;height:9px;border-radius:50%;border:2px solid var(--warn);border-top-color:transparent;animation:ocrspin .7s linear infinite}
+.attach-pill .ocr.ok .sp{display:none}
+@keyframes ocrspin{to{transform:rotate(360deg)}}
+.input-row{display:flex;align-items:flex-end;gap:8px}
+textarea{
+  flex:1;resize:none;background:transparent;border:none;outline:none;
+  font-size:15px;line-height:1.55;color:var(--txt-1);
+  max-height:150px;min-height:24px;padding:3px 2px;width:100%;
+}
+textarea::placeholder{color:var(--txt-3)}
+.tool-btn{
+  width:38px;height:38px;border-radius:10px;flex:none;display:grid;place-items:center;
+  color:var(--txt-2);border:1px solid var(--line-1);background:var(--bg-3);
+  transition:all .18s ease;position:relative;
+}
+.tool-btn:hover{color:var(--txt-1);border-color:var(--line-2)}
+.tool-btn svg{width:18px;height:18px}
+.tool-btn .dot{
+  position:absolute;top:-3px;right:-3px;width:9px;height:9px;border-radius:50%;
+  background:var(--acc-1);border:2px solid var(--bg-2);display:none;
+}
+.tool-btn.has-file .dot{display:block}
+.send-btn{
+  width:40px;height:40px;border-radius:11px;flex:none;display:grid;place-items:center;
+  background:var(--acc-grad);color:#041018;
+  box-shadow:0 6px 18px rgba(34,211,238,.32);transition:all .18s ease;
+}
+.send-btn:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(34,211,238,.42)}
+.send-btn:active{transform:translateY(0) scale(.96)}
+.send-btn:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+.send-btn svg{width:19px;height:19px}
+.send-btn.stop{background:linear-gradient(120deg,#fb7185,#ef4444);color:#1c0508}
+
+/* ---------- 设置抽屉 ---------- */
+.scrim{
+  position:fixed;inset:0;z-index:40;background:rgba(3,6,12,.62);
+  opacity:0;pointer-events:none;transition:opacity .28s ease;
+  backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);
+}
+.scrim.show{opacity:1;pointer-events:auto}
+.drawer{
+  position:fixed;top:0;right:0;bottom:0;z-index:41;width:min(400px,92vw);
+  background:rgba(11,16,26,.95);border-left:1px solid var(--line-1);
+  transform:translateX(102%);transition:transform .32s cubic-bezier(.32,.72,.28,1);
+  display:flex;flex-direction:column;
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  box-shadow:-8px 0 40px rgba(2,6,17,.5);
+}
+.drawer.show{transform:translateX(0)}
+.drawer-head{
+  display:flex;align-items:center;gap:10px;padding:calc(16px + var(--safe-top)) 18px 14px;
+  border-bottom:1px solid var(--line-1);flex:none;
+}
+.drawer-head h3{font-size:16px;font-weight:650;flex:1}
+.drawer-body{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:16px;-webkit-overflow-scrolling:touch}
+.drawer-body::-webkit-scrollbar{width:6px}
+.drawer-body::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:3px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:12.5px;color:var(--txt-2);font-weight:550}
+.field .hint{font-size:11px;color:var(--txt-3);line-height:1.5}
+input[type="text"],input[type="password"],select{
+  width:100%;background:rgba(17,24,39,.7);border:1px solid var(--line-1);
+  border-radius:12px;padding:11px 14px;font-size:14px;color:var(--txt-1);
+  outline:none;transition:border-color .2s ease,box-shadow .2s ease;
+}
+input:focus,select:focus{border-color:rgba(34,211,238,.5);box-shadow:0 0 0 3px rgba(34,211,238,.08)}
+.seg{display:flex;gap:2px;background:var(--bg-2);border:1px solid var(--line-1);padding:3px;border-radius:var(--radius-sm)}
+.seg button{flex:1;padding:7px 6px;border-radius:6px;font-size:12.5px;color:var(--txt-2);transition:all .18s ease}
+.seg button.active{background:var(--bg-3);color:var(--acc-1);box-shadow:inset 0 0 0 1px var(--line-1);font-weight:600}
+.primary-btn{
+  width:100%;padding:10px 14px;border-radius:var(--radius-sm);
+  background:var(--acc-grad);color:#041018;font-weight:650;font-size:14px;
+  box-shadow:0 6px 18px rgba(34,211,238,.25);transition:all .18s ease;
+}
+.primary-btn:hover{filter:brightness(1.08)}
+.primary-btn:disabled{opacity:.5;cursor:not-allowed;box-shadow:none}
+.ghost-btn{
+  width:100%;padding:9px 14px;border-radius:var(--radius-sm);
+  background:var(--bg-2);border:1px solid var(--line-1);color:var(--txt-2);
+  font-size:13.5px;transition:all .18s ease;
+}
+.ghost-btn:hover{color:var(--txt-1);border-color:var(--line-2)}
+.divider{height:1px;background:var(--line-1);margin:2px 0}
+.section-title{font-size:11px;letter-spacing:1.2px;color:var(--txt-3);text-transform:uppercase;font-weight:600}
+.status-line{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--txt-2);padding:10px 12px;background:var(--bg-2);border:1px solid var(--line-1);border-radius:var(--radius-sm)}
+.status-line .dot{width:8px;height:8px;border-radius:50%;background:var(--txt-3);flex:none}
+.status-line .dot.ok{background:var(--ok);box-shadow:0 0 10px rgba(52,211,153,.6)}
+.status-line .dot.err{background:var(--err);box-shadow:0 0 10px rgba(251,113,133,.6)}
+.status-line .dot.busy{background:var(--warn);animation:blink 1.1s steps(2) infinite}
+.help-card{
+  background:var(--bg-2);border:1px solid var(--line-1);border-radius:var(--radius-sm);
+  padding:12px 13px;font-size:12px;color:var(--txt-2);line-height:1.7;
+}
+.help-card b{color:var(--txt-1);font-weight:600}
+.help-card code{font-family:var(--mono);font-size:11px;background:var(--bg-3);padding:1px 5px;border-radius:4px;color:var(--acc-1)}
+.help-card ul{list-style:none;display:flex;flex-direction:column;gap:5px}
+.help-card li{display:flex;gap:7px}
+.help-card li svg{width:13px;height:13px;flex:none;margin-top:4px;color:var(--acc-1)}
+
+/* ---------- Toast ---------- */
+#toast{
+  position:fixed;left:50%;bottom:calc(20px + var(--safe-bottom));z-index:60;
+  transform:translateX(-50%) translateY(16px);
+  display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;width:min(92vw,420px);
+}
+.toast-item{
+  display:flex;align-items:center;gap:9px;
+  background:var(--bg-3);border:1px solid var(--line-2);
+  border-radius:12px;padding:10px 14px;font-size:13px;color:var(--txt-1);
+  box-shadow:var(--shadow-1);
+  animation:toastIn .3s cubic-bezier(.32,.72,.28,1) both;
+  max-width:100%;
+}
+.toast-item.err{border-color:rgba(251,113,133,.45)}
+.toast-item.err svg{color:var(--err)}
+.toast-item.ok svg{color:var(--ok)}
+.toast-item.out{animation:toastOut .3s ease both}
+.toast-item svg{width:16px;height:16px;flex:none}
+@keyframes toastIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes toastOut{to{opacity:0;transform:translateY(10px)}}
+
+/* ---------- 确认弹层（替代 confirm） ---------- */
+.modal-scrim{
+  position:fixed;inset:0;z-index:70;background:rgba(3,6,12,.66);
+  display:none;align-items:center;justify-content:center;padding:24px;
+  backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+}
+.modal-scrim.show{display:flex}
+.modal{
+  width:min(400px,100%);background:var(--bg-1);border:1px solid var(--line-1);
+  border-radius:16px;padding:20px;box-shadow:var(--shadow-1);animation:fadeUp .3s ease both;
+}
+.modal h4{font-size:15px;font-weight:650;margin-bottom:8px}
+.modal p{font-size:13px;color:var(--txt-2);line-height:1.7;margin-bottom:18px}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end}
+.modal-actions button{padding:8px 16px;border-radius:9px;font-size:13.5px;font-weight:600}
+.modal-actions .cancel{background:var(--bg-2);border:1px solid var(--line-1);color:var(--txt-2)}
+.modal-actions .ok{background:var(--err);color:#fff}
+
+/* ---------- 浏览器环境提示条 ---------- */
+.env-banner{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:linear-gradient(135deg,#2a1a1a,#1a1212);
+  border-bottom:1px solid rgba(251,113,133,.35);
+  padding:10px 14px;display:none;gap:10px;align-items:center;justify-content:center;
+  font-size:12.5px;color:#fbbf24;line-height:1.6;
+}
+.env-banner.show{display:flex}
+.env-banner svg{width:18px;height:18px;color:#fbbf24;flex:none}
+.env-banner b{color:#fbbf24;font-weight:650}
+.env-banner span{max-width:min(520px,70vw)}
+.env-banner .eb-btn{
+  flex:none;padding:6px 12px;border-radius:8px;border:1px solid rgba(251,113,133,.35);
+  background:rgba(251,113,133,.12);color:#fb7185;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;
+}
+.env-banner .eb-btn:hover{background:rgba(251,113,133,.22)}
+
+/* ---------- 本地模型下载进度 ---------- */
+.field-block{display:block}
+.field select{
+  width:100%;background:var(--bg-2);border:1px solid var(--line-1);color:var(--txt-1);
+  border-radius:10px;padding:9px 11px;font-size:13.5px;outline:none;
+}
+.field select:focus{border-color:var(--acc-1)}
+.hint.warn{color:#fbbf24;opacity:.95}
+.model-progress{
+  position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;
+  background:rgba(3,6,12,.62);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);padding:24px;
+}
+.model-progress[hidden]{display:none}
+.model-progress .mp-card{
+  width:min(420px,100%);background:var(--bg-1);border:1px solid var(--line-1);
+  border-radius:16px;padding:20px;box-shadow:var(--shadow-1);animation:fadeUp .3s ease both;
+}
+.model-progress .mp-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.model-progress .mp-title{font-size:14px;font-weight:650;display:flex;align-items:center;gap:8px}
+.model-progress .mp-title svg{width:17px;height:17px;color:var(--acc-1);animation:spin 1.6s linear infinite}
+.model-progress .mp-bar{
+  height:8px;border-radius:999px;background:var(--bg-3);border:1px solid var(--line-1);overflow:hidden;
+}
+.model-progress .mp-fill{
+  height:100%;width:0%;border-radius:999px;
+  background:linear-gradient(90deg,var(--acc-1),var(--acc-2));
+  transition:width .25s ease;
+}
+.model-progress .mp-text{font-size:12px;color:var(--txt-2);margin-top:10px;line-height:1.6;word-break:break-all}
+.model-progress .mp-close{
+  display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;flex:none;
+  border-radius:8px;border:1px solid var(--line-1);background:var(--bg-2);color:var(--txt-2);cursor:pointer;
+}
+.model-progress .mp-close:hover{color:var(--txt-1);border-color:var(--line-2)}
+
+/* ---------- 打字 spinner ---------- */
+.think{display:inline-flex;align-items:center;gap:10px;font-size:13px;color:var(--txt-2);padding:4px 2px}
+.think .spinner{width:15px;height:15px;border:2px solid var(--line-2);border-top-color:var(--acc-1);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* ---------- Markdown 内容排版 ---------- */
+.md{font-size:14.5px;line-height:1.75}
+.md > *:first-child{margin-top:0}
+.md p{margin:.45em 0}
+.md h1,.md h2,.md h3,.md h4{margin:.9em 0 .4em;font-weight:650;line-height:1.4}
+.md h1{font-size:1.4em}.md h2{font-size:1.22em}.md h3{font-size:1.08em}.md h4{font-size:1em}
+.md ul,.md ol{margin:.5em 0;padding-left:1.5em}
+.md li{margin:.2em 0}
+.md ul{list-style:disc}.md ol{list-style:decimal}
+.md code.inline{
+  font-family:var(--mono);font-size:.86em;background:var(--bg-3);
+  border:1px solid var(--line-1);padding:1.5px 6px;border-radius:5px;color:var(--acc-1);
+}
+.md pre{
+  background:#0a101c;border:1px solid var(--line-1);border-radius:9px;
+  padding:11px 13px;overflow-x:auto;margin:.6em 0;
+}
+.md pre code{font-family:var(--mono);font-size:12.5px;line-height:1.6;color:#c9d6ea;white-space:pre}
+.md blockquote{
+  border-left:3px solid var(--acc-1);background:rgba(34,211,238,.06);
+  padding:7px 12px;margin:.55em 0;border-radius:0 8px 8px 0;color:var(--txt-2);
+}
+.md a{color:var(--acc-1);text-decoration:underline;text-underline-offset:3px;word-break:break-all}
+.md table{border-collapse:collapse;margin:.6em 0;width:100%;font-size:13px}
+.md th,.md td{border:1px solid var(--line-1);padding:6px 10px;text-align:left}
+.md th{background:var(--bg-2);font-weight:600;color:var(--txt-1)}
+.md tr:nth-child(even) td{background:rgba(148,163,184,.04)}
+.md .math{
+  font-family:var(--mono);font-size:.92em;color:#a5f3fc;
+  background:rgba(34,211,238,.07);border:1px solid rgba(34,211,238,.18);
+  border-radius:6px;padding:1px 7px;
+}
+.md .math.math-block{display:block;margin:.55em 0;padding:10px 13px;text-align:center;letter-spacing:.3px}
+.md strong{font-weight:650;color:#fff}
+.md hr{border:none;border-top:1px solid var(--line-1);margin:1em 0}
+
+/* ---------- 回复操作行 ---------- */
+.reply-actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.reply-actions button{
+  display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:var(--txt-2);
+  background:var(--bg-2);border:1px solid var(--line-1);
+  padding:5px 10px;border-radius:999px;transition:all .18s ease;
+}
+.reply-actions button:hover{color:var(--txt-1);border-color:var(--line-2)}
+.reply-actions button svg{width:12px;height:12px}
+
+/* 移动端细节 */
+@media(max-width:719px){
+  #app{padding:0 10px}
+  header{gap:7px;flex-wrap:nowrap}
+  .brand{gap:7px}
+  .brand-mark{width:30px;height:30px;border-radius:8px}
+  .brand-mark svg{width:17px;height:17px}
+  .brand h1{font-size:14px}
+  .brand .sub{display:none}
+  .mode-pill{padding:2.5px;gap:1px;max-width:none}
+  .mode-pill button{padding:5px 7px;font-size:10.5px;white-space:nowrap;flex:0 0 auto;min-width:max-content}
+  .icon-btn{width:32px;height:32px}
+  .welcome{padding:16px 4px}
+  .welcome h2{font-size:20px}
+  .welcome p{font-size:12.5px;max-width:100%}
+  .welcome .chips{flex-direction:column;align-items:center;width:100%;max-width:100%}
+  .chip{font-size:12.5px;padding:9px 16px;gap:6px;width:min(240px,86%)}
+  .msg{gap:8px}
+  .msg .bubble{padding:11px 12px}
+  .md{font-size:14.5px;line-height:1.72}
+  .composer{padding:8px}
+  .attach-row{padding:4px 2px}
+  .reply-actions button{padding:5px 9px;font-size:11.5px}
+  .seg{flex-wrap:wrap}
+}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important}
+}
+
+
+/* ========== 指南页样式 ========== */
+
+/* ========== 设计令牌（与首页一致） ========== */
+:root{
+  --bg-0:#070b12;
+  --bg-1:#0b101a;
+  --bg-2:#111827;
+  --bg-3:#1a2434;
+  --line-1:rgba(148,163,184,.14);
+  --line-2:rgba(148,163,184,.28);
+  --txt-1:#e6edf7;
+  --txt-2:#94a3b8;
+  --txt-3:#64748b;
+  --acc-1:#22d3ee;
+  --acc-2:#3b82f6;
+  --acc-grad:linear-gradient(120deg,#22d3ee 0%,#3b82f6 100%);
+  --ok:#34d399;
+  --warn:#fbbf24;
+  --err:#fb7185;
+  --radius:14px;
+  --radius-sm:10px;
+  --shadow-1:0 10px 40px rgba(2,6,17,.5);
+  --font:ui-sans-serif,"SF Pro Display",-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg-0);color:var(--txt-1);font-family:var(--font);
+  line-height:1.6;min-height:100vh;display:flex;flex-direction:column;
+}
+
+/* 背景氛围 */
+body::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(50rem 50rem at 80% -10%,rgba(34,211,238,.08),transparent 60%),
+    radial-gradient(40rem 40rem at 10% 110%,rgba(59,130,246,.10),transparent 55%);
+}
+
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+
+/* ========== 导航栏 ========== */
+.nav{
+  position:sticky;top:0;z-index:100;
+  background:rgba(7,11,18,.85);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--line-1);
+}
+.nav-inner{
+  max-width:1100px;margin:0 auto;padding:14px 20px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+}
+.nav-brand{
+  display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;
+  letter-spacing:.3px;
+}
+.nav-brand .mark{
+  width:36px;height:36px;border-radius:10px;flex:none;
+  background:linear-gradient(135deg,rgba(34,211,238,.12),rgba(59,130,246,.18));
+  border:1px solid rgba(34,211,238,.25);
+  display:grid;place-items:center;
+  box-shadow:0 4px 16px rgba(34,211,238,.20);
+}
+.nav-brand .mark svg{width:20px;height:20px}
+.nav-links{display:flex;align-items:center;gap:8px}
+.nav-links a{
+  padding:8px 16px;border-radius:999px;font-size:14px;color:var(--txt-2);
+  transition:all .2s ease;
+}
+.nav-links a:hover{color:var(--txt-1);background:var(--bg-2)}
+.nav-links .btn-primary{
+  background:var(--acc-grad);color:#041018;font-weight:650;
+  box-shadow:0 4px 16px rgba(34,211,238,.30);
+}
+.nav-links .btn-primary:hover{box-shadow:0 6px 24px rgba(34,211,238,.45);transform:translateY(-1px)}
+.nav-toggle{display:none}
+
+@media(max-width:640px){
+  .nav-links{display:none;position:absolute;top:100%;left:0;right:0;background:var(--bg-1);border-bottom:1px solid var(--line-1);padding:12px 20px;flex-direction:column;align-items:stretch;gap:4px}
+  .nav-links.open{display:flex}
+  .nav-links a{text-align:center}
+  .nav-toggle{display:block;width:36px;height:36px;border-radius:8px;display:grid;place-items:center;color:var(--txt-2);border:1px solid var(--line-1)}
+  .nav-toggle:hover{color:var(--txt-1);background:var(--bg-2)}
+}
+
+/* ========== 面包屑 ========== */
+.breadcrumb{
+  background:var(--bg-1);border-bottom:1px solid var(--line-1);
+}
+.breadcrumb-inner{
+  max-width:1100px;margin:0 auto;padding:10px 20px;
+  display:flex;align-items:center;gap:10px;font-size:13px;color:var(--txt-3);
+}
+.breadcrumb-inner a{color:var(--txt-2);transition:color .2s}
+.breadcrumb-inner a:hover{color:var(--acc-1)}
+
+/* ========== 内容区 ========== */
+.content{position:relative;z-index:1;flex:1;padding:50px 20px}
+.content-inner{max-width:800px;margin:0 auto}
+
+.page-title{
+  font-size:36px;font-weight:700;margin-bottom:12px;
+  background:linear-gradient(135deg,var(--txt-1),var(--acc-1));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.page-desc{font-size:16px;color:var(--txt-2);margin-bottom:50px}
+
+/* ========== 章节 ========== */
+.guide-section{margin-bottom:50px}
+.guide-section h2{
+  font-size:22px;font-weight:650;margin-bottom:20px;
+  display:flex;align-items:center;gap:10px;
+}
+.guide-section h2 .icon{
+  width:36px;height:36px;border-radius:10px;
+  background:linear-gradient(135deg,rgba(34,211,238,.1),rgba(59,130,246,.15));
+  border:1px solid rgba(34,211,238,.2);
+  display:grid;place-items:center;flex:none;
+}
+.guide-section h2 .icon svg{width:18px;height:18px;color:var(--acc-1)}
+
+/* 步骤卡片 */
+.step-list{display:flex;flex-direction:column;gap:16px}
+.step-item{
+  background:linear-gradient(180deg,var(--bg-2),var(--bg-1));
+  border:1px solid var(--line-1);border-radius:var(--radius);
+  padding:24px;transition:all .3s ease;
+}
+.step-item:hover{border-color:var(--line-2)}
+.step-item-header{
+  display:flex;align-items:center;gap:12px;margin-bottom:12px;
+}
+.step-num{
+  width:32px;height:32px;border-radius:50%;
+  background:var(--acc-grad);color:#041018;font-size:14px;font-weight:700;
+  display:grid;place-items:center;flex:none;
+}
+.step-item h3{font-size:17px;font-weight:650}
+.step-item p{font-size:14px;color:var(--txt-2);line-height:1.7;margin-bottom:10px}
+.step-item p:last-child{margin-bottom:0}
+
+/* 提示框 */
+.tip-box{
+  background:rgba(34,211,238,.06);border:1px solid rgba(34,211,238,.2);
+  border-radius:var(--radius-sm);padding:16px 18px;margin-top:12px;
+}
+.tip-box.warn{background:rgba(251,191,36,.06);border-color:rgba(251,191,36,.2)}
+.tip-box strong{color:var(--acc-1);font-size:13px;display:block;margin-bottom:6px}
+.tip-box.warn strong{color:var(--warn)}
+.tip-box p{font-size:13px;color:var(--txt-2);margin:0;line-height:1.6}
+
+/* 代码块 */
+.code-block{
+  background:var(--bg-0);border:1px solid var(--line-1);border-radius:var(--radius-sm);
+  padding:14px 16px;font-family:ui-monospace,monospace;font-size:13px;
+  color:var(--txt-2);overflow-x:auto;margin:10px 0;
+}
+.code-block .comment{color:var(--txt-3)}
+
+/* 表格 */
+.guide-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+.guide-table th,.guide-table td{
+  padding:12px 14px;text-align:left;border-bottom:1px solid var(--line-1);
+}
+.guide-table th{color:var(--txt-1);font-weight:650;background:var(--bg-2)}
+.guide-table td{color:var(--txt-2)}
+.guide-table tr:hover td{background:rgba(148,163,184,.04)}
+
+/* FAQ */
+.faq-item{
+  background:linear-gradient(180deg,var(--bg-2),var(--bg-1));
+  border:1px solid var(--line-1);border-radius:var(--radius);
+  margin-bottom:12px;overflow:hidden;
+}
+.faq-q{
+  padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  cursor:pointer;font-weight:650;font-size:15px;transition:background .2s;
+}
+.faq-q:hover{background:rgba(148,163,184,.04)}
+.faq-q::after{
+  content:"+";font-size:20px;color:var(--acc-1);flex:none;
+  transition:transform .3s ease;
+}
+.faq-item.open .faq-q::after{transform:rotate(45deg)}
+.faq-a{
+  max-height:0;overflow:hidden;transition:max-height .3s ease;
+}
+.faq-item.open .faq-a{max-height:500px}
+.faq-a-inner{
+  padding:0 20px 18px;font-size:14px;color:var(--txt-2);line-height:1.7;
+}
+
+/* ========== CTA ========== */
+.cta-box{
+  background:linear-gradient(135deg,rgba(34,211,238,.06),rgba(59,130,246,.08));
+  border:1px solid rgba(34,211,238,.15);border-radius:var(--radius);
+  padding:40px;text-align:center;margin:40px 0;
+}
+.cta-box h3{font-size:22px;font-weight:700;margin-bottom:10px}
+.cta-box p{font-size:15px;color:var(--txt-2);margin-bottom:24px}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;padding:14px 32px;border-radius:999px;
+  font-size:16px;font-weight:650;transition:all .25s ease;cursor:pointer;border:none;
+}
+.btn-primary{
+  background:var(--acc-grad);color:#041018;
+  box-shadow:0 8px 32px rgba(34,211,238,.35);
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(34,211,238,.50)}
+
+/* ========== 页脚 ========== */
+.footer{
+  padding:40px 20px 30px;text-align:center;color:var(--txt-3);font-size:13px;
+  border-top:1px solid var(--line-1);position:relative;z-index:1;
+}
+.footer-links{display:flex;gap:20px;justify-content:center;margin-bottom:16px;flex-wrap:wrap}
+.footer-links a{color:var(--txt-2);transition:color .2s}
+.footer-links a:hover{color:var(--acc-1)}
+
+/* ========== 响应式 ========== */
+@media(max-width:640px){
+  .content{padding:30px 16px}
+  .page-title{font-size:28px}
+  .guide-section h2{font-size:18px}
+  .step-item{padding:18px}
+  .cta-box{padding:28px 20px}
+}
+
+/* 滚动显现 */
+.reveal{opacity:0;transform:translateY(30px);transition:all .6s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+</style>
+</head>
+<body>
+
+
+<!-- 统一导航 -->
+<nav class="site-nav" id="siteNav">
+  <div class="site-nav-inner">
+    <a href="#home" class="site-brand" onclick="showView('home');return false;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      <span>智答AI</span>
+    </a>
+    <button class="site-nav-toggle" id="siteNavToggle" aria-label="菜单">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+    <div class="site-nav-links" id="siteNavLinks">
+      <a href="#home" data-view="home" onclick="showView('home');return false;">首页</a>
+      <a href="#app" data-view="app" onclick="showView('app');return false;">开始答题</a>
+      <a href="#guide" data-view="guide" onclick="showView('guide');return false;">使用指南</a>
+    </div>
+  </div>
+</nav>
+
+
+<!-- 首页视图 -->
+<div class="view active" id="view-home">
+<!-- 导航 -->
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-badge anim">
+    <span class="dot"></span>
+    <span>基于多模态大模型 · 永久免费</span>
+  </div>
+  <h1 class="anim anim-d1">拍照传题<br>秒出详解</h1>
+  <p class="anim anim-d2">上传图片、PDF 或粘贴网址，AI 自动识别题目并给出答案。支持仅输出答案或完整过程讲解，还能继续追问。</p>
+  <div class="hero-cta anim anim-d3">
+    <a href="#app" onclick="showView('app');return false;" class="btn btn-large btn-primary">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      立即使用
+    </a>
+    <a href="#guide" onclick="showView('guide');return false;" class="btn btn-large btn-secondary">查看指南</a>
+  </div>
+
+  <div class="hero-demo anim anim-d3">
+    <div class="demo-header">
+      <span class="demo-dot"></span><span class="demo-dot"></span><span class="demo-dot"></span>
+      <span style="margin-left:auto;font-size:12px;color:var(--txt-3)">智答AI · 演示</span>
+    </div>
+    <div class="demo-body">
+      <span class="prompt">👤 用户：</span>请解答这道数学题：求函数 f(x)=x³-3x²+2 的极值<br><br>
+      <span class="answer">🤖 智答AI（详细过程模式）：</span><br>
+      <span class="step">1. 求导：f'(x) = 3x² - 6x</span>
+      <span class="step">2. 令 f'(x)=0：3x(x-2)=0，得 x=0 或 x=2</span>
+      <span class="step">3. 二阶导数：f''(x) = 6x - 6</span>
+      <span class="step">4. f''(0)=-6&lt;0，故 x=0 处取得极大值 f(0)=2</span>
+      <span class="step">5. f''(2)=6&gt;0，故 x=2 处取得极小值 f(2)=-2</span>
+      <span class="step" style="color:var(--ok)">✓ 答案：极大值 2（x=0），极小值 -2（x=2）</span>
+    </div>
+  </div>
+</section>
+
+<!-- 功能特性 -->
+<section class="section">
+  <div class="section-inner">
+    <h2 class="section-title reveal">强大功能，一应俱全</h2>
+    <p class="section-subtitle reveal">无论是作业难题、考试复习还是知识巩固，智答AI 都能帮你高效解决</p>
+    <div class="features-grid">
+      <div class="feature-card reveal">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        </div>
+        <h3>双模式答题</h3>
+        <p>「仅答案」模式快速出结果，「详细过程」模式逐步讲解，满足不同场景需求</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+        <h3>多种输入方式</h3>
+        <p>支持拍照上传、PDF 文件、粘贴网址或直接打字输入，怎么方便怎么来</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+        </div>
+        <h3>智能追问</h3>
+        <p>对解答不满意？一键追问"详细解释""换个思路""出类似题"，深度学习</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
+        </div>
+        <h3>全平台通用</h3>
+        <p>手机、平板、电脑都能用，随时随地解决学习难题，无需下载安装</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h3>隐私安全</h3>
+        <p>题目图片在浏览器本地识别，不上传原图；API Key 保存在本地，数据自主可控</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        </div>
+        <h3>免费使用</h3>
+        <p>内置智谱 GLM-4-Flash 永久免费模型，注册即得 API Key，零成本开始使用</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 使用流程 -->
+<section class="section" style="background:linear-gradient(180deg,transparent,rgba(59,130,246,.03))">
+  <div class="section-inner">
+    <h2 class="section-title reveal">三步搞定难题</h2>
+    <p class="section-subtitle reveal">无需复杂设置，打开即用，30 秒出答案</p>
+    <div class="steps">
+      <div class="step-card reveal">
+        <div class="step-num">1</div>
+        <h3>拍照或输入</h3>
+        <p>用手机拍照、上传 PDF、粘贴网页链接，或直接打字描述题目</p>
+      </div>
+      <div class="step-arrow reveal">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+      <div class="step-card reveal">
+        <div class="step-num">2</div>
+        <h3>AI 智能解答</h3>
+        <p>选择「仅答案」或「详细过程」模式，AI 自动分析并给出解答</p>
+      </div>
+      <div class="step-arrow reveal">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+      <div class="step-card reveal">
+        <div class="step-num">3</div>
+        <h3>追问深化</h3>
+        <p>没看懂？一键追问详细解释、换个思路或出类似练习题</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section cta-section">
+  <div class="section-inner">
+    <div class="cta-box reveal">
+      <h2>准备好提升学习效率了吗？</h2>
+      <p>现在就开始使用智答AI，让AI成为你的私人学习助手</p>
+      <a href="#app" onclick="showView('app');return false;" class="btn btn-large btn-primary">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        免费开始使用
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- 页脚 -->
+
+</div>
+
+<!-- 答题视图 -->
+<div class="view" id="view-app">
+</div>
+<div id="app">
+  <header>
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#22d3ee;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
+            </linearGradient>
+          </defs>
+          <rect x="4" y="4" width="32" height="32" rx="8" fill="url(#logoGrad)" opacity="0.15"/>
+          <rect x="4" y="4" width="32" height="32" rx="8" stroke="url(#logoGrad)" stroke-width="2" fill="none"/>
+          <path d="M20 10v20M10 20h20" stroke="url(#logoGrad)" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="20" cy="20" r="4" fill="url(#logoGrad)"/>
+          <circle cx="20" cy="20" r="8" stroke="url(#logoGrad)" stroke-width="1" opacity="0.5"/>
+        </svg>
+      </div>
+      <div class="brand-txt">
+        <h1>智答 <span style="color:var(--acc-1)">AI</span></h1>
+        <span class="sub">拍照传题 · 秒出详解</span>
+      </div>
+    </div>
+    <div class="mode-pill" id="modePill" role="tablist" aria-label="答题模式">
+      <button type="button" class="active" data-mode="answer" role="tab" aria-selected="true">仅答案</button>
+      <button type="button" data-mode="process" role="tab" aria-selected="false">答案+过程</button>
+    </div>
+    <button class="icon-btn" id="btnSettings" aria-label="设置" title="设置">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </button>
+  </header>
+
+  <main id="chat" aria-live="polite"></main>
+
+  <footer>
+    <div class="composer" id="composer">
+      <div class="attach-row" id="attachRow"></div>
+      <div class="input-row">
+        <button class="tool-btn" id="btnAttach" aria-label="上传文件" title="上传图片 / PDF / 文本">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+          <span class="dot"></span>
+        </button>
+        <button class="tool-btn" id="btnUrl" aria-label="粘贴网址" title="粘贴网址内容">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          <span class="dot"></span>
+        </button>
+        <textarea id="input" rows="1" placeholder="输入题目，或粘贴文本 / 网址，或点击左侧按钮上传文件…" enterkeyhint="send"></textarea>
+        <button class="send-btn" id="btnSend" aria-label="发送">
+          <svg id="icSend" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+          <svg id="icStop" viewBox="0 0 24 24" fill="currentColor" style="display:none"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+        </button>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<!-- 设置抽屉 -->
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-label="设置">
+  <div class="drawer-head">
+    <h3>设置</h3>
+    <button class="icon-btn" id="btnCloseDrawer" aria-label="关闭">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="drawer-body">
+    <div class="section-title">模型服务</div>
+    <div class="seg" id="segProvider">
+      <button type="button" class="active" data-p="local">本地 AI（离线）</button>
+      <button type="button" data-p="openai">在线模型（推荐 · 快+准）</button>
+      <button type="button" data-p="gemini">Google Gemini</button>
+    </div>
+
+    <div class="field-block" id="localSection">
+      <div class="field">
+        <label>本地模型</label>
+        <select id="inpLocalModel">
+          <option value="qwen2.5-1.5b">Qwen2.5-1.5B（推荐 · 均衡，约 1 GB）</option>
+          <option value="qwen2.5-0.5b">Qwen2.5-0.5B（轻量 · 最快，约 350 MB）</option>
+        </select>
+        <span class="hint">完全免费、数据不出本机。首次使用需联网下载一次模型，之后可离线使用。</span>
+        <span class="hint warn">⚠️ 需要 Chrome / Edge 113+（WebGPU）；本地模式仅支持文本与网址，图片 / PDF 识图请切换 API 模式。</span>
+      </div>
+    </div>
+
+    <div class="field-block" id="apiSection" style="display:none">
+      <div class="field">
+        <label>免费模型预设 <span style="font-weight:400">（选好后自动填URL和模型）</span></label>
+        <select id="inpPreset">
+          <option value="">-- 手动填写 --</option>
+          <option value="zhipu">智谱 AI · GLM-4-Flash（永久免费 / 注册即送额度）</option>
+          <option value="qianfan">百度千帆 · ERNIE-Speed（永久免费 / 需创建应用）</option>
+          <option value="silicon">硅基流动 · DeepSeek-V2.5（注册送2000万Token）</option>
+        </select>
+      </div>
+      <div class="field">
+        <label id="lblBaseUrl">API Base URL</label>
+        <input type="text" id="inpBaseUrl" placeholder="https://api.openai.com/v1" autocapitalize="off" spellcheck="false">
+      </div>
+      <div class="field">
+        <label>模型名称 <span style="font-weight:400">（Model）</span></label>
+        <input type="text" id="inpModel" placeholder="gpt-4o-mini / gemini-2.0-flash" autocapitalize="off" spellcheck="false">
+      </div>
+      <div class="field">
+        <label>API Key</label>
+        <input type="password" id="inpKey" placeholder="sk-…" autocomplete="off" spellcheck="false">
+        <span class="hint">Key 仅保存在本机浏览器中，不会上传到任何服务器。部分平台免Key也可用。</span>
+      </div>
+      <button class="ghost-btn" id="btnProxyMacro" type="button">支持 Azure / 千帆 / 本地服务 · 点击查看格式</button>
+    </div>
+
+    <div class="divider"></div>
+    <div class="section-title">行为</div>
+    <div class="field">
+      <label>每次追问携带上下文</label>
+      <div class="seg" id="segCtx">
+        <button type="button" class="active" data-c="1">开启</button>
+        <button type="button" data-c="0">关闭</button>
+      </div>
+      <span class="hint">开启后，追问时会带上之前的对话内容，回答更连贯；关闭则每条独立。</span>
+    </div>
+    <div class="field">
+      <label>默认答题模式</label>
+      <div class="seg" id="segDefaultMode">
+        <button type="button" class="active" data-dm="answer">仅答案</button>
+        <button type="button" data-dm="process">答案+过程</button>
+      </div>
+      <span class="hint">打开应用时的默认模式，可在顶部随时切换。</span>
+    </div>
+
+    <div class="divider"></div>
+    <div class="section-title">网络代理（抓取网址）</div>
+    <div class="field">
+      <input type="text" id="inpProxy" placeholder="https://api.allorigins.win/raw?url={url}" autocapitalize="off" spellcheck="false">
+      <span class="hint">浏览器跨域限制，抓取网页需经代理。{url} 会被替换为目标网址；留空使用内置公共代理。</span>
+    </div>
+
+    <div class="divider"></div>
+    <div class="section-title">连接状态</div>
+    <div class="status-line" id="statusLine">
+      <span class="dot" id="statusDot"></span>
+      <span id="statusText">尚未配置 Key</span>
+    </div>
+    <button class="primary-btn" id="btnTest" type="button">测试连接</button>
+
+    <div class="help-card">
+      <ul>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><span><b>用法</b>：上传题目图片 / PDF / 文本，或粘贴网址，输入区支持直接打字提问，回车或点发送即可。</span></li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><span><b>两种模式</b>：顶部「仅答案」直接给结果；「答案+过程」给出逐步推导与讲解。</span></li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><span><b>追问</b>：答案下方点「继续追问」或直接输入新问题即可接着聊。</span></li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg><span><b>隐私</b>：所有请求由本页直连你配置的模型服务，中间不经任何第三方服务器。</span></li>
+      </ul>
+    </div>
+  </div>
+</aside>
+
+<!-- 确认弹层 -->
+<div class="modal-scrim" id="modalScrim">
+  <div class="modal">
+    <h4 id="modalTitle">提示</h4>
+    <p id="modalText"></p>
+    <div class="modal-actions">
+      <button type="button" class="cancel" id="modalCancel">取消</button>
+      <button type="button" class="ok" id="modalOk">确认</button>
+    </div>
+  </div>
+</div>
+
+<!-- 浏览器环境提示条 -->
+<div class="env-banner" id="envBanner">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+  <span><b>当前浏览器不支持本地 AI 推理</b>：请在 Chrome / Edge / Safari 中打开本页面，或在下方切换到 API 模式使用。</span>
+  <button class="eb-btn" id="ebSwitch">切换到 API 模式</button>
+  <button class="eb-btn" id="ebDismiss">知道了</button>
+</div>
+
+<div id="toast" role="status"></div>
+
+<!-- 本地模型下载进度层 -->
+<div class="model-progress" id="modelProgress" hidden>
+  <div class="mp-card">
+    <div class="mp-head">
+      <div class="mp-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/></svg>
+        <span>正在加载本地 AI 模型…</span>
+      </div>
+      <button class="mp-close" id="mpClose" aria-label="最小化进度" title="最小化">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </div>
+    <div class="mp-bar"><div class="mp-fill" id="mpFill"></div></div>
+    <div class="mp-text" id="mpText">准备中…</div>
+  </div>
+</div>
+
+
+
+</div>
+
+<!-- 指南视图 -->
+<div class="view" id="view-guide">
+<!-- 内容 -->
+<main class="content">
+  <div class="content-inner">
+    <h1 class="page-title reveal">使用指南</h1>
+    <p class="page-desc reveal">从配置到使用，手把手教你快速上手智答AI</p>
+
+    <!-- 快速开始 -->
+    <section class="guide-section reveal">
+      <h2>
+        <span class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        </span>
+        快速开始
+      </h2>
+      <div class="step-list">
+        <div class="step-item">
+          <div class="step-item-header">
+            <span class="step-num">1</span>
+            <h3>获取 API Key</h3>
+          </div>
+          <p>智答AI 需要调用大模型 API 来解答题目。推荐注册智谱 AI（永久免费）：</p>
+          <ol style="margin-left:20px;color:var(--txt-2);font-size:14px;line-height:2">
+            <li>打开 <a href="https://open.bigmodel.cn/" target="_blank" style="color:var(--acc-1)">智谱开放平台</a></li>
+            <li>用手机号注册账号</li>
+            <li>进入「API Keys」页面，点击「创建 API Key」</li>
+            <li>复制以 <code style="background:var(--bg-3);padding:2px 6px;border-radius:4px">sk-</code> 开头的 Key</li>
+          </ol>
+          <div class="tip-box">
+            <strong>💡 提示</strong>
+            <p>智谱 GLM-4-Flash 模型永久免费，新用户赠送 1000 万 tokens，足够日常使用。</p>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-item-header">
+            <span class="step-num">2</span>
+            <h3>配置 API Key</h3>
+          </div>
+          <p>进入<a href="#app" onclick="showView('app');return false;" style="color:var(--acc-1)">答题页面</a>，点击右下角 ⚙️ 设置按钮：</p>
+          <ol style="margin-left:20px;color:var(--txt-2);font-size:14px;line-height:2">
+            <li>选择「智谱 AI · GLM-4-Flash」</li>
+            <li>粘贴刚才复制的 API Key</li>
+            <li>点击「测试连接」，看到 ✅ 即可开始使用</li>
+          </ol>
+          <div class="tip-box warn">
+            <strong>⚠️ 注意</strong>
+            <p>API Key 保存在浏览器本地，换设备或清除浏览器数据后需要重新配置。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 使用流程 -->
+    <section class="guide-section reveal">
+      <h2>
+        <span class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </span>
+        使用流程
+      </h2>
+      <div class="step-list">
+        <div class="step-item">
+          <div class="step-item-header">
+            <span class="step-num">1</span>
+            <h3>输入题目</h3>
+          </div>
+          <p>支持四种方式输入题目：</p>
+          <table class="guide-table">
+            <tr><th>方式</th><th>操作</th><th>适用场景</th></tr>
+            <tr><td>📷 拍照上传</td><td>点击 📎 按钮，选择拍照或相册</td><td>纸质作业、试卷</td></tr>
+            <tr><td>📄 PDF 文件</td><td>点击 📎 按钮，选择 PDF 文件</td><td>电子试卷、习题集</td></tr>
+            <tr><td>🔗 粘贴网址</td><td>点击 🔗 按钮，粘贴题目网页链接</td><td>在线题库、网页题目</td></tr>
+            <tr><td>⌨️ 直接输入</td><td>在输入框打字描述题目</td><td>简单题目、补充说明</td></tr>
+          </table>
+        </div>
+
+        <div class="step-item">
+          <div class="step-item-header">
+            <span class="step-num">2</span>
+            <h3>选择模式</h3>
+          </div>
+          <p>页面顶部有两个模式按钮：</p>
+          <ul style="margin-left:20px;color:var(--txt-2);font-size:14px;line-height:2">
+            <li><strong style="color:var(--txt-1)">仅答案</strong>：快速给出答案，适合检查作业</li>
+            <li><strong style="color:var(--txt-1)">答案+过程</strong>：详细步骤讲解，适合学习理解</li>
+          </ul>
+        </div>
+
+        <div class="step-item">
+          <div class="step-item-header">
+            <span class="step-num">3</span>
+            <h3>发送并查看解答</h3>
+          </div>
+          <p>点击发送按钮或按回车，AI 会自动分析题目并给出解答。解答过程会实时流式显示，无需等待。</p>
+        </div>
+
+        <div class="step-item">
+          <div class="step-item-header">
+            <span class="step-num">4</span>
+            <h3>追问深化</h3>
+          </div>
+          <p>每道解答下方有三个追问按钮：</p>
+          <ul style="margin-left:20px;color:var(--txt-2);font-size:14px;line-height:2">
+            <li><strong style="color:var(--txt-1)">详细解释</strong>：用更简单的方式重新讲解</li>
+            <li><strong style="color:var(--txt-1)">简洁回答</strong>：只保留核心答案</li>
+            <li><strong style="color:var(--txt-1)">类似题目</strong>：出一道同类练习题巩固</li>
+          </ul>
+          <p>也可以直接在输入框打字追问任何问题。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 常见问题 -->
+    <section class="guide-section reveal">
+      <h2>
+        <span class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+        </span>
+        常见问题
+      </h2>
+      <div class="faq-item reveal">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+          为什么需要 API Key？
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">
+          智答AI 使用大语言模型来解答题目，需要调用模型厂商的 API。API Key 是你与模型服务通信的凭证。我们推荐智谱 GLM-4-Flash（永久免费），你也可以使用自己的 OpenAI 或 Gemini Key。
+        </div></div>
+      </div>
+      <div class="faq-item reveal">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+          API Key 安全吗？
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">
+          安全。API Key 只保存在你的浏览器本地（localStorage），不会上传到任何服务器。题目图片的 OCR 识别也在浏览器本地完成，不会上传原图到第三方。
+        </div></div>
+      </div>
+      <div class="faq-item reveal">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+          支持哪些类型的题目？
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">
+          理论上支持所有文字类题目：数学、物理、化学、生物、英语、语文、历史、地理等。对于需要复杂图形分析的纯几何题，识别效果取决于图片清晰度。
+        </div></div>
+      </div>
+      <div class="faq-item reveal">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+          手机上能用吗？
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">
+          完全可以。智答AI 是响应式网页，手机浏览器打开就能用。推荐使用手机自带浏览器或 Chrome/Safari，拍照上传功能在手机上体验最佳。
+        </div></div>
+      </div>
+      <div class="faq-item reveal">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+          为什么 OCR 识别需要时间？
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">
+          首次使用 OCR 时，浏览器需要从 CDN 下载 Tesseract.js 引擎和中文语言包（约 10MB），这个过程需要 10-30 秒，取决于网络速度。下载完成后会缓存到本地，后续使用会快很多。
+        </div></div>
+      </div>
+      <div class="faq-item reveal">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+          答案不准确怎么办？
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">
+          大模型偶尔会出错，特别是复杂计算题。建议：1）使用「详细过程」模式检查步骤；2）对不确定的答案进行追问验证；3）关键考试请以教材和老师讲解为准，AI 仅作为辅助工具。
+        </div></div>
+      </div>
+    </section>
+
+    <!-- 隐私说明 -->
+    <section class="guide-section reveal">
+      <h2>
+        <span class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </span>
+        隐私说明
+      </h2>
+      <div class="step-item">
+        <p>我们非常重视你的隐私：</p>
+        <ul style="margin-left:20px;color:var(--txt-2);font-size:14px;line-height:2;margin-top:10px">
+          <li><strong style="color:var(--txt-1)">图片不上传</strong>：题目图片在浏览器本地完成 OCR 识别，原图不会离开你的设备</li>
+          <li><strong style="color:var(--txt-1)">Key 存本地</strong>：API Key 保存在浏览器 localStorage，不存储在服务器</li>
+          <li><strong style="color:var(--txt-1)">纯静态页面</strong>：没有后端服务器，不收集任何用户数据</li>
+          <li><strong style="color:var(--txt-1)">无痕使用</strong>：可以开启浏览器的隐私/无痕模式使用，关闭后不留痕迹</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <div class="cta-box reveal">
+      <h3>准备好开始了吗？</h3>
+      <p>配置好 API Key，马上体验 AI 答题的便捷</p>
+      <a href="#app" onclick="showView('app');return false;" class="btn btn-primary">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        去答题
+      </a>
+    </div>
+  </div>
+</main>
+
+<!-- 页脚 -->
+<footer class="footer">
+  <div class="footer-links">
+    <a href="#home" onclick="showView('home');return false;">首页</a>
+    <a href="#app" onclick="showView('app');return false;">开始答题</a>
+    <a href="#guide" onclick="showView('guide');return false;">使用指南</a>
+  </div>
+  <p>智答AI · 拍照传题，秒出详解</p>
+</footer>
+</div>
+
+
+<!-- 统一页脚 -->
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <div class="footer-brand">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      <span>智答AI</span>
+    </div>
+    <div class="footer-links">
+      <a href="#home" onclick="showView('home');return false;">首页</a>
+      <a href="#app" onclick="showView('app');return false;">开始答题</a>
+      <a href="#guide" onclick="showView('guide');return false;">使用指南</a>
+    </div>
+    <p class="footer-copy">拍照传题，秒出详解</p>
+  </div>
+</footer>
+
+
+<script>
+/* ========== 视图切换 ========== */
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  const target = document.getElementById('view-' + name);
+  if (target) {
+    target.classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  document.querySelectorAll('.site-nav-links a').forEach(a => {
+    a.classList.toggle('active', a.dataset.view === name);
+  });
+  document.getElementById('siteNavLinks').classList.remove('open');
+}
+
+document.getElementById('siteNavToggle').addEventListener('click', () => {
+  document.getElementById('siteNavLinks').classList.toggle('open');
+});
+
+function initView() {
+  const hash = location.hash.replace('#', '');
+  if (hash && ['home','app','guide'].includes(hash)) {
+    showView(hash);
+  } else {
+    showView('home');
+  }
+}
+window.addEventListener('hashchange', initView);
+
+/* ========== 首页 JS ========== */
+
+// 滚动显现动画
+const observer = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+},{threshold:.15});
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+
+
+/* ========== 答题页 JS ========== */
+
+"use strict";
+/* ==========================================================
+ * 题解助手 · AI Answer — 单文件应用逻辑
+ * 双 API 渠道：OpenAI 兼容 / Google Gemini（流式）
+ * ========================================================== */
+
+/* ---------- 工具函数 ---------- */
+const $ = (s, el) => (el || document).querySelector(s);
+const $$ = (s, el) => Array.from((el || document).querySelectorAll(s));
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+
+function switchToApiMode() {
+  state.settings.provider = 'openai';
+  safeStore.set('ays_settings', state.settings);
+  if (typeof applySettingsToUI === 'function') applySettingsToUI();
+  toast('已切换到 OpenAI 兼容模式：请在设置中配置 API Key', 'info', 4200);
+  openDrawer();
+}
+
+function debounce(fn, ms) {
+  let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };
+}
+
+/* ---------- 安全存储：localStorage 可用则持久化，否则内存回退 ---------- */
+/* 设计说明：作为本地工具应用，Key/偏好在本机浏览器可用时持久化；
+   若浏览器禁用了存储（隐私模式 / 沙箱环境），自动回退为会话内存，功能不受影响。 */
+const safeStore = (() => {
+  let mem = {};
+  let canUse = false;
+  try {
+    const k = '__probe__';
+    window.localStorage.setItem(k, '1');
+    window.localStorage.removeItem(k);
+    canUse = true;
+  } catch (e) { canUse = false; }
+  return {
+    get(key, fallback) {
+      try { if (canUse) { const v = window.localStorage.getItem(key); return v == null ? fallback : JSON.parse(v); } } catch (e) {}
+      return key in mem ? mem[key] : fallback;
+    },
+    set(key, val) {
+      mem[key] = val;
+      try { if (canUse) window.localStorage.setItem(key, JSON.stringify(val)); } catch (e) {}
+    },
+    remove(key) { delete mem[key]; try { if (canUse) window.localStorage.removeItem(key); } catch (e) {} }
+  };
+})();
+
+/* ---------- Toast / 确认弹层（避免 alert/confirm） ---------- */
+let toastTimer = null;
+function toast(msg, type = 'info', ms = 2600) {
+  const box = $('#toast');
+  const item = document.createElement('div');
+  item.className = 'toast-item ' + type;
+  const icon = type === 'err'
+    ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>'
+    : type === 'ok'
+      ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>'
+      : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>';
+  item.innerHTML = icon + '<span>' + esc(msg) + '</span>';
+  box.appendChild(item);
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    item.classList.add('out');
+    setTimeout(() => item.remove(), 300);
+  }, ms);
+}
+
+let modalResolve = null;
+function confirmDialog(title, text) {
+  return new Promise((resolve) => {
+    modalResolve = resolve;
+    $('#modalTitle').textContent = title;
+    $('#modalText').innerHTML = text;
+    $('#modalScrim').classList.add('show');
+  });
+}
+function closeModal(val) {
+  $('#modalScrim').classList.remove('show');
+  if (modalResolve) { modalResolve(val); modalResolve = null; }
+}
+
+/* ---------- 应用状态 ---------- */
+const defaults = {
+  provider: 'local',
+  localModel: 'qwen2.5-0.5b', // 默认使用已下载的0.5B模型
+  baseUrl: 'https://api.openai.com/v1',
+  baseUrlGemini: 'https://generativelanguage.googleapis.com/v1beta',
+  model: 'gpt-4o-mini',
+  modelGemini: 'gemini-2.0-flash',
+  key: '',
+  ctx: true,
+  defaultMode: 'answer',
+  proxy: ''
+};
+const state = {
+  settings: Object.assign({}, defaults, safeStore.get('ays_settings', {})),
+  mode: safeStore.get('ays_default_mode', defaults.defaultMode) || defaults.defaultMode,
+  msg: [],            // 会话历史 {role, content, attachments, mode}
+  controller: null,   // AbortController
+  busy: false,
+  urlPending: ''      // 待确认的抓取 URL
+};
+let pendingFiles = []; // {name, type, dataUrl, text?}
+
+const PROXIES = [
+  u => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u),
+  u => 'https://corsproxy.io/?url=' + encodeURIComponent(u),
+  u => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u)
+];
+
+/* ---------- 本地 AI 引擎（WebLLM / WebGPU，免 Key 免服务器） ---------- */
+const WEBLLM_CDNS = [
+  'https://cdn.jsdelivr.net/npm/@mlc-ai/web-llm@0.2.85/+esm',
+  'https://fastly.jsdelivr.net/npm/@mlc-ai/web-llm@0.2.85/+esm',
+  'https://gcore.jsdelivr.net/npm/@mlc-ai/web-llm@0.2.85/+esm',
+  'https://testingcf.jsdelivr.net/npm/@mlc-ai/web-llm@0.2.85/+esm',
+  'https://esm.sh/@mlc-ai/web-llm@0.2.85',
+  'https://unpkg.com/@mlc-ai/web-llm@0.2.85/lib/index.js?module',
+  'https://npm.onmicrosoft.cn/@mlc-ai/web-llm@0.2.85/lib/index.js?module'
+];
+const LOCAL_MODELS = {
+  'qwen2.5-1.5b': {
+    id: 'Qwen2.5-1.5B-Instruct-q4f16_1-MLC',
+    zh: 'Qwen2.5-1.5B',
+    vram: 1630, lowVram: 950
+  },
+  'qwen2.5-0.5b': {
+    id: 'Qwen2.5-0.5B-Instruct-q4f16_1-MLC',
+    zh: 'Qwen2.5-0.5B',
+    vram: 945, lowVram: 550
+  }
+};
+let _localEngine = null;
+let _localEngineLoading = false;
+
+/* ---------- 轻量 Markdown 渲染（带 XSS 防护） ---------- */
+function renderMarkdown(src) {
+  if (!src) return '';
+  let s = String(src).replace(/\r\n/g, '\n');
+  // 按行解析块级结构
+  const lines = s.split('\n');
+  let html = '';
+  let i = 0;
+  let inCode = false, codeBuf = [], codeLang = '';
+  let listType = null, listBuf = [];
+  let tableBuf = [];
+
+  function flushList() {
+    if (listBuf.length) {
+      const tag = listType === 'ol' ? 'ol' : 'ul';
+      html += '<' + tag + '>' + listBuf.join('') + '</' + tag + '>';
+      listBuf = []; listType = null;
+    }
+  }
+  function flushTable() {
+    if (tableBuf.length) {
+      html += '<table>' + tableBuf.join('') + '</table>';
+      tableBuf = [];
+    }
+  }
+
+  for (; i < lines.length; i++) {
+    let line = lines[i];
+
+    // 代码块围栏
+    if (/^```/.test(line)) {
+      if (inCode) {
+        html += '<pre><code>' + esc(codeBuf.join('\n')) + '</code></pre>';
+        codeBuf = []; inCode = false;
+      } else {
+        flushList(); flushTable();
+        inCode = true; codeLang = line.slice(3).trim();
+      }
+      continue;
+    }
+    if (inCode) { codeBuf.push(line); continue; }
+
+    // 空行
+    if (/^\s*$/.test(line)) { flushList(); flushTable(); continue; }
+
+    // 表格
+    if (/^\s*\|/.test(line)) {
+      flushList();
+      const cells = line.trim().replace(/^\||\|$/g, '').split('|').map(c => c.trim()).filter(c => c !== '');
+      if (/^[-:]{2,}$/.test(cells.join('|'))) continue; // 分隔行
+      const tag = tableBuf.length ? 'td' : 'th';
+      tableBuf.push('<tr>' + cells.map(c => '<' + tag + '>' + inlineMD(c) + '</' + tag + '>').join('') + '</tr>');
+      continue;
+    }
+    flushTable();
+
+    // 标题
+    let m = line.match(/^(#{1,6})\s+(.*)$/);
+    if (m) { flushList(); const lv = m[1].length; html += '<h' + lv + '>' + inlineMD(m[2]) + '</h' + lv + '>'; continue; }
+
+    // 引用
+    if (/^>\s?/.test(line)) {
+      flushList();
+      html += '<blockquote>' + inlineMD(line.replace(/^>\s?/, '')) + '</blockquote>';
+      continue;
+    }
+
+    // 分隔线
+    if (/^([-*_])\1{2,}\s*$/.test(line)) { flushList(); html += '<hr>'; continue; }
+
+    // 待办/列表
+    m = line.match(/^\s*(\d+)[.)]\s+(.*)$/);
+    if (m) {
+      if (listType !== 'ol') { flushList(); listType = 'ol'; }
+      listBuf.push('<li>' + inlineMD(m[2]) + '</li>');
+      continue;
+    }
+    m = line.match(/^\s*[-*+]\s+(.*)$/);
+    if (m) {
+      if (listType !== 'ul') { flushList(); listType = 'ul'; }
+      listBuf.push('<li>' + inlineMD(m[1]) + '</li>');
+      continue;
+    }
+    flushList();
+
+    // 普通段落
+    html += '<p>' + inlineMD(line) + '</p>';
+  }
+  flushList(); flushTable();
+  if (inCode) { html += '<pre><code>' + esc(codeBuf.join('\n')) + '</code></pre>'; }
+
+  return html;
+}
+
+function inlineMD(s) {
+  let t = esc(s);
+  // 数学公式块 $$...$$ → 占位保留
+  const mathBlocks = [];
+  t = t.replace(/\$\$([\s\S]+?)\$\$/g, (_, b) => {
+    mathBlocks.push('<span class="math math-block">' + esc(b.trim()) + '</span>');
+    return '\u0000M' + (mathBlocks.length - 1) + '\u0000';
+  });
+  // 行内公式 $...$
+  t = t.replace(/(^|[^$])\$([^$\n]+?)\$/g, (m, pre, b) => {
+    mathBlocks.push('<span class="math">' + esc(b.trim()) + '</span>');
+    return pre + '\u0000M' + (mathBlocks.length - 1) + '\u0000';
+  });
+  // 代码
+  t = t.replace(/`([^`\n]+)`/g, '<code class="inline">$1</code>');
+  // 粗体/斜体
+  t = t.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  t = t.replace(/(^|[^*])\*([^*\n]+)\*/g, '$1<em>$2</em>');
+  // 链接
+  t = t.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+  // 还原公式占位
+  t = t.replace(/\u0000M(\d+)\u0000/g, (_, n) => mathBlocks[+n] || '');
+  return t;
+}
+
+/* ---------- Prompt 构造（双模式） ---------- */
+function buildSystemPrompt(mode) {
+  const modeZh = mode === 'answer' ? '仅答案' : '答案+详细过程';
+  const modeRule = mode === 'answer'
+    ? '这是一个「仅答案」请求：请直接、简洁地给出最终答案。\n- 计算题给出最终数值与必要单位；选择题给出选项字母；简答题给出结论与要点，不用展开推导。\n- 若有多个小问按顺序列明。'
+    : '这是一个「答案+详细过程」请求：请给出完整解答。\n- 先简短概括题意，再分步骤详细推导，说明关键公式、原理与思路；\n- 计算过程清晰完整，最后单独给出结论；\n- 适合讲题，可适当补充易错点提示。';
+  return [
+    '你是专业的全科智能答题助手，帮助用户解答数学、物理、化学、生物、英语、语文、政治、历史、地理、编程等各学科题目。',
+    '当前模式：' + modeZh + '。',
+    modeRule,
+    '回答规范：',
+    '1. 若题目信息有歧义，先列关键假设再作答；',
+    '2. 涉及公式请用 $...$ 或 $$...$$ 包裹 LaTeX 公式；',
+    '3. 代码类题目用 ``` 代码块包裹；',
+    '4. 保持中文回答，除非题目本身为英文；',
+    '5. 若你无法确定答案，请如实说明依据与局限，不要编造；',
+    '6. 【强制】若输入包含多道题目，必须逐一回答所有题目，不得省略、不得用"答案待补充"等占位符，确保完整输出。'
+  ].join('\n');
+}
+
+/* ---------- 请求体构造 ---------- */
+function buildMsgParts(text, attachments) {
+  // 返回两部分：普通文本内容 + 图片/文档内联数据
+  const imgs = attachments.filter(a => a.type && a.type.startsWith('image/'));
+  const pdfIn = attachments.filter(a => a.type === 'application/pdf');
+  // OCR 成功的附件不再内联原图（纯文本模型也能看懂），未识别成功的保留原图（多模态模型兜底）
+  const images = imgs.filter(a => !(a.ocrText && a.ocrText.trim()));
+  const pdfs = pdfIn.filter(a => !(a.ocrText && a.ocrText.trim()));
+  const texts = attachments.filter(a => a.kind === 'text');
+  let contentText = text.trim();
+  const extraTexts = [];
+  texts.forEach(t => { if (t.text) extraTexts.push('【附件：' + t.name + '（文本）】\n' + t.text); });
+  imgs.concat(pdfIn).forEach(a => {
+    if (a.ocrText && a.ocrText.trim()) {
+      extraTexts.push('【附件：' + a.name + '（图片/PDF 识别出的文字）】\n' + a.ocrText.slice(0, 20000));
+    }
+  });
+  if (extraTexts.length) {
+    contentText = (contentText ? contentText + '\n\n' : '') + '【上传内容】\n' + extraTexts.join('\n\n---\n\n');
+  }
+  // 提醒模型不要省略题目
+  if (contentText) {
+    contentText += '\n\n【要求】请完整回答上述所有题目，不要省略任何一题，不要出现"答案待补充"等占位内容。';
+  }
+  return { contentText, images, pdfs };
+}
+
+function buildOpenAiBody(system, history, text, attachments, stream) {
+  const { contentText, images, pdfs } = buildMsgParts(text, attachments);
+  let userContent;
+  if (images.length === 0 && pdfs.length === 0) {
+    userContent = contentText || '请解答';
+  } else {
+    userContent = [{ type: 'text', text: contentText || '请解答图片/文档中的题目' }];
+    images.forEach(img => userContent.push({ type: 'image_url', image_url: { url: img.dataUrl } }));
+    // PDF：多数 OpenAI 兼容服务不支持，尽量用文本占位提示
+    pdfs.forEach(p => userContent.push({ type: 'text', text: '[已附带 PDF 文件：' + p.name + '，若你的模型支持文档输入请直接理解；否则请提示用户]' }));
+  }
+  const messages = [{ role: 'system', content: system }].concat(history).concat([{ role: 'user', content: userContent }]);
+  return { messages, stream };
+}
+
+function buildGeminiBody(system, history, text, attachments, stream) {
+  const { contentText, images, pdfs } = buildMsgParts(text, attachments);
+  const parts = [];
+  if (contentText) parts.push({ text: contentText });
+  images.forEach(img => {
+    const b64 = img.dataUrl.split(',')[1] || '';
+    parts.push({ inlineData: { mimeType: img.type, data: b64 } });
+  });
+  pdfs.forEach(p => {
+    const b64 = p.dataUrl.split(',')[1] || '';
+    parts.push({ inlineData: { mimeType: 'application/pdf', data: b64 } });
+  });
+  if (parts.length === 0) parts.push({ text: '请解答' });
+  // Gemini 无 system 角色：将 system 作为首条 user 指令
+  const contents = [{ role: 'user', parts: [{ text: system }] }];
+  history.forEach(m => {
+    contents.push({ role: m.role === 'user' ? 'user' : 'model', parts: [{ text: m.content || '' }] });
+  });
+  contents.push({ role: 'user', parts });
+  return { contents };
+}
+
+/* ---------- 流式请求 ---------- */
+async function streamChat(context, onDelta, onDone) {
+  const s = state.settings;
+  const system = buildSystemPrompt(context.mode);
+  const { history, text, attachments } = context;
+  const controller = new AbortController();
+  state.controller = controller;
+
+  const handleError = (err) => {
+    console.error('[handleError]', err);
+    let message = err && err.message ? err.message : String(err);
+    if (/AbortError|aborted/i.test(message)) return { aborted: true };
+    if (isLocal()) {
+      // 本地模式：如果底层已经给出详细错误（含 CDN 失败详情），直接透传
+      if (/首个失败原因|无法加载本地 AI 引擎|本地模型加载失败/.test(message)) {
+        return { error: message };
+      }
+      // 只有原始浏览器级 fetch 错误才做兜底翻译
+      if (/^(Failed to fetch|fetch fail|NetworkError|timeout|TimedOut)$/i.test(message))
+        message = '本地 AI 引擎加载失败：无法从 CDN 下载引擎或模型（网络不可达 / CDN 受限 / 浏览器拦截动态脚本）。请用 Chrome / Edge 原版浏览器打开并保持联网，或切换到 API 模式。';
+      return { error: message };
+    }
+    if (/401|403/.test(message)) message = '认证失败：请检查 API Key 是否正确';
+    else if (/429/.test(message)) message = '请求过于频繁（限流），请稍后重试';
+    else if (/502|503|504|fetch fail|Failed to fetch/i.test(message)) message = '网络错误：无法连接模型服务，请检查网络与 Base URL';
+    return { error: message };
+  };
+
+  try {
+    const OAI_COMPAT = ['zhipu','qianfan','silicon'];
+    if (OAI_COMPAT.includes(s.provider)) s.provider = 'openai';
+    if (isLocal()) {
+      const local = await getLocalEngine();
+      const { contentText } = buildMsgParts(text, attachments);
+      const messages = [{ role: 'system', content: system }]
+        .concat(history.map(m => ({ role: m.role === 'assistant' ? 'assistant' : 'user', content: m.content || '' })))
+        .concat([{ role: 'user', content: contentText || '请解答' }]);
+      const chunks = await local.chat.completions.create({
+        messages,
+        stream: true,
+        temperature: 0.7,
+        max_tokens: 4096
+      });
+      let acc = '';
+      for await (const chunk of chunks) {
+        if (controller.signal.aborted) { try { if (local.interruptGenerate) local.interruptGenerate(); } catch (e) {} break; }
+        const piece = chunk && chunk.choices && chunk.choices[0] && chunk.choices[0].delta && chunk.choices[0].delta.content;
+        if (piece) { acc += piece; onDelta(piece); }
+      }
+      state.controller = null;
+      onDone(acc, controller.signal.aborted);
+      return;
+    }
+
+    if (s.provider === 'openai') {
+      const body = buildOpenAiBody(system, history, text, attachments, true);
+      body.model = s.model || 'glm-4-flash';
+      body.max_tokens = 8192;
+      body.temperature = 0.7;
+      const url = (s.baseUrl || defaults.baseUrl).replace(/\/+$/, '') + '/chat/completions';
+      const resp = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + (s.key || '').trim() },
+        body: JSON.stringify(body),
+        signal: controller.signal
+      });
+      if (!resp.ok) {
+        let detail = '';
+        try { const j = await resp.json(); detail = j.error && (j.error.message || j.error.code) ? (j.error.message || j.error.code) : ''; } catch (e) {}
+        // 同时读取原始响应文本用于调试
+        let rawText = '';
+        try { rawText = await resp.clone().text(); } catch (e) {}
+        console.error('[API错误] HTTP', resp.status, '详情:', detail, '原始响应:', rawText.slice(0,500));
+        throw new Error('HTTP ' + resp.status + (detail ? ': ' + detail : '') + (rawText ? ' [响应内容]: ' + rawText.slice(0,200) : ''));
+      }
+      const reader = resp.body.getReader();
+      const decoder = new TextDecoder('utf-8');
+      let buf = '';
+      let acc = '';
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buf += decoder.decode(value, { stream: true });
+        const lines = buf.split('\n');
+        buf = lines.pop();
+        for (const ln of lines) {
+          const t = ln.trim();
+          if (!t.startsWith('data:')) continue;
+          const payload = t.slice(5).trim();
+          if (payload === '[DONE]') continue;
+          try {
+            const j = JSON.parse(payload);
+            const delta = j.choices && j.choices[0] && j.choices[0].delta;
+            const piece = delta && (delta.content !== undefined && delta.content !== null) ? delta.content : '';
+            if (piece) { acc += piece; onDelta(piece); }
+          } catch (e) {}
+        }
+      }
+      state.controller = null;
+      onDone(acc);
+      return;
+    }
+
+    if (s.provider === 'gemini') {
+      const body = buildGeminiBody(system, history, text, attachments, true);
+      const model = (s.modelGemini || defaults.modelGemini).trim();
+      const key = (s.key || '').trim();
+      const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(model) + ':streamGenerateContent?alt=sse&key=' + encodeURIComponent(key);
+      const resp = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+        signal: controller.signal
+      });
+      if (!resp.ok) {
+        let detail = '';
+        try { const j = await resp.json(); detail = (j.error && j.error.message) || ''; } catch (e) {}
+        throw new Error('HTTP ' + resp.status + (detail ? ': ' + detail : ''));
+      }
+      const reader = resp.body.getReader();
+      const decoder = new TextDecoder('utf-8');
+      let buf = '';
+      let acc = '';
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buf += decoder.decode(value, { stream: true });
+        const chunks = buf.split('\n\n');
+        buf = chunks.pop();
+        for (const ch of chunks) {
+          const t = ch.trim();
+          if (!t.startsWith('data:')) continue;
+          const payload = t.slice(5).trim();
+          try {
+            const j = JSON.parse(payload);
+            const cands = j.candidates || [];
+            for (const c of cands) {
+              const parts = c.content && c.content.parts ? c.content.parts : [];
+              for (const p of parts) {
+                if (p.text) { acc += p.text; onDelta(p.text); }
+              }
+            }
+          } catch (e) {}
+        }
+      }
+      state.controller = null;
+      onDone(acc);
+      return;
+    }
+
+    throw new Error('未知的模型服务渠道：' + s.provider);
+  } catch (err) {
+    state.controller = null;
+    const r = handleError(err);
+    if (r.aborted) { onDone && onDone('', true); return; }
+    onDone && onDone('', false, r.error);
+  }
+}
+
+/* ---------- 本地引擎：进度层与初始化 ---------- */
+function showModelProgress(title, pct) {
+  if (!el.mp) return;
+  el.mp.hidden = false;
+  const p = Math.min(100, Math.max(0, (typeof pct === 'number' ? pct : 0) * 100));
+  el.mpFill.style.width = p.toFixed(1) + '%';
+  el.mpText.textContent = title + (typeof pct === 'number' ? ' · ' + p.toFixed(0) + '%' : '');
+}
+function hideModelProgress() { if (el.mp) el.mp.hidden = true; }
+
+async function getLocalEngine() {
+  if (_localEngine) return _localEngine;
+  if (_localEngineLoading) throw new Error('模型正在加载中，请稍候再试');
+  if (!('gpu' in navigator) || !navigator.gpu) {
+    hideModelProgress();
+    throw new Error('当前浏览器不支持 WebGPU，无法本地推理。请使用 Chrome / Edge 113+（并开启硬件加速），或切换到 API 模式。');
+  }
+  _localEngineLoading = true;
+  showModelProgress('正在加载本地 AI 引擎…', 0);
+  let CreateMLCEngine = null;
+  const cdnFailures = [];
+  for (const cdn of WEBLLM_CDNS) {
+    try {
+      const mod = await Promise.race([
+        import(cdn),
+        new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 45000))
+      ]);
+      if (mod && mod.CreateMLCEngine) { CreateMLCEngine = mod.CreateMLCEngine; break; }
+      cdnFailures.push(cdn.split('/')[2] + ': 未导出 CreateMLCEngine');
+    } catch (e) {
+      const isLocalPath = cdn.startsWith('./') || cdn.startsWith('/');
+      const host = isLocalPath ? cdn : (cdn.split('/')[2] || cdn);
+      const reason = (e && e.message) || String(e);
+      console.error('[CDN失败]', host, reason);
+      cdnFailures.push(host + ': ' + reason);
+    }
+  }
+  if (!CreateMLCEngine) {
+    _localEngineLoading = false; hideModelProgress();
+    console.error('[getLocalEngine] 所有CDN失败详情:', cdnFailures);
+    const first = cdnFailures.length ? '首个失败原因：' + cdnFailures[0] : '';
+    throw new Error('无法加载本地 AI 引擎（' + WEBLLM_CDNS.length + ' 个 CDN 均失败；' + first + '）。请检查网络，或换用 Chrome / Edge 原版浏览器，或在设置中切换到 API 模式。');
+  }
+  const cfg = LOCAL_MODELS[state.settings.localModel] || LOCAL_MODELS[defaults.localModel];
+  showModelProgress('正在初始化模型…', 0.005);
+  try {
+    // CDN 版：使用 WebLLM 内置模型目录（模型权重从官方 CDN 下载，无需本地文件）
+    _localEngine = await CreateMLCEngine(cfg.id, {
+      initProgressCallback: (p) => {
+        const t = p && p.text ? p.text : '下载模型中…';
+        showModelProgress(t, p && typeof p.progress === 'number' ? p.progress : 0);
+      }
+    });
+  } catch (e) {
+    _localEngineLoading = false; hideModelProgress();
+    const m = (e && e.message) || String(e);
+    let tip = '';
+    if (/Failed to fetch|fetch fail|NetworkError|timeout/i.test(m)) tip = '（网络下载模型权重失败，请检查网络后重试）';
+    else if (/WebGPU|gpu|adapter/i.test(m)) tip = '（WebGPU 初始化失败，请确认浏览器版本及硬件加速开启情况）';
+    throw new Error('本地模型加载失败：' + m + tip);
+  }
+  _localEngineLoading = false;
+  hideModelProgress();
+  return _localEngine;
+}
+
+/* ---------- 连接测试 ---------- */
+async function testConnection() {
+  const s = state.settings;
+  setStatus('busy', '正在检查…');
+  if (isLocal()) {
+    if (!('gpu' in navigator) || !navigator.gpu) {
+      setStatus('err', 'WebGPU 不可用：请用 Chrome / Edge 113+ 并开启硬件加速');
+      toast('当前浏览器不支持 WebGPU 本地推理', 'err', 3800);
+      return;
+    }
+    if (_localEngine) { setStatus('ok', '本地引擎已加载，可离线使用'); toast('本地引擎已就绪', 'ok'); return; }
+    setStatus('ok', '本地引擎可用：无需 Key，发送问题时将自动下载模型');
+    toast('本地引擎可用：无需 Key，发送时自动加载模型', 'ok', 3200);
+    return;
+  }
+  try {
+    if (s.provider === 'openai') {
+      const url = (s.baseUrl || defaults.baseUrl).replace(/\/+$/, '') + '/models';
+      const resp = await fetch(url, { headers: { 'Authorization': 'Bearer ' + (s.key || '').trim() } });
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      setStatus('ok', '连接成功：OpenAI 兼容服务可用');
+      toast('连接成功', 'ok');
+    } else if (s.provider === 'gemini') {
+      const model = (s.modelGemini || defaults.modelGemini).trim();
+      const key = (s.key || '').trim();
+      const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(model) + '?key=' + encodeURIComponent(key);
+      const resp = await fetch(url);
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      setStatus('ok', '连接成功：Gemini 服务可用');
+      toast('连接成功', 'ok');
+    }
+  } catch (e) {
+    setStatus('err', '连接失败：' + ((e && e.message) || e));
+    toast('连接失败：' + ((e && e.message) || e), 'err', 4000);
+  }
+}
+
+/* ---------- DOM 引用 ---------- */
+const el = {
+  chat: $('#chat'), input: $('#input'), composer: $('#composer'),
+  btnSend: $('#btnSend'), icSend: $('#icSend'), icStop: $('#icStop'),
+  btnAttach: $('#btnAttach'), btnUrl: $('#btnUrl'), attachRow: $('#attachRow'),
+  modePill: $('#modePill'),
+  btnSettings: $('#btnSettings'), scrim: $('#scrim'), drawer: $('#drawer'), btnCloseDrawer: $('#btnCloseDrawer'),
+  segProvider: $('#segProvider'), inpBaseUrl: $('#inpBaseUrl'), inpModel: $('#inpModel'), inpPreset: $('#inpPreset'),
+  inpKey: $('#inpKey'), inpProxy: $('#inpProxy'), segCtx: $('#segCtx'), segDefaultMode: $('#segDefaultMode'),
+  btnTest: $('#btnTest'), btnProxyMacro: $('#btnProxyMacro'),
+  inpLocalModel: $('#inpLocalModel'), localSection: $('#localSection'), apiSection: $('#apiSection'),
+  mp: $('#modelProgress'), mpFill: $('#mpFill'), mpText: $('#mpText'), mpClose: $('#mpClose'),
+  statusLine: $('#statusLine'), statusDot: $('#statusDot'), statusText: $('#statusText'),
+  modalScrim: $('#modalScrim'), modalTitle: $('#modalTitle'), modalText: $('#modalText'),
+  modalOk: $('#modalOk'), modalCancel: $('#modalCancel'),
+  envBanner: $('#envBanner'), ebSwitch: $('#ebSwitch'), ebDismiss: $('#ebDismiss')
+};
+
+/* ---------- 浏览器环境检测 ---------- */
+function detectRestrictedBrowser() {
+  const ua = navigator.userAgent.toLowerCase();
+  const isWechat = ua.indexOf('micromessenger') > -1;
+  const isBaidu = ua.indexOf('baidu') > -1;
+  const isQQ = ua.indexOf('qq') > -1;
+  const isWeibo = ua.indexOf('weibo') > -1;
+  const isDingtalk = ua.indexOf('dingtalk') > -1;
+  const isUC = ua.indexOf('ucbrowser') > -1;
+  const isQihoo = ua.indexOf('qihoobrowser') > -1;
+  const isLiebao = ua.indexOf('liebao') > -1;
+  const isSogou = ua.indexOf('se 2.x') > -1 || ua.indexOf('sogou') > -1;
+  const isQuark = ua.indexOf('quark') > -1;
+  const isChrome = ua.indexOf('chrome') > -1;
+  const isEdge = ua.indexOf('edg') > -1;
+  const isSafari = ua.indexOf('safari') > -1 && !isChrome;
+  const isFirefox = ua.indexOf('firefox') > -1;
+  const restricted = isWechat || isBaidu || isQQ || isWeibo || isDingtalk || isUC || isQihoo || isLiebao || isSogou || isQuark;
+  const supported = (isChrome || isEdge || isSafari || isFirefox) && !restricted;
+  return { restricted, supported, names: { wechat: isWechat, baidu: isBaidu, qq: isQQ, uc: isUC, quark: isQuark } };
+}
+
+function showEnvBannerIfNeeded() {
+  const d = detectRestrictedBrowser();
+  if (!d.restricted && d.supported) return; // 正常浏览器不显示
+  if (!el.envBanner) return;
+  const nameMap = { wechat: '微信', baidu: '百度 App', qq: 'QQ 浏览器', uc: 'UC 浏览器', quark: '夸克浏览器' };
+  let name = '当前浏览器';
+  for (const [k, v] of Object.entries(d.names)) { if (v) { name = nameMap[k] || '当前浏览器'; break; } }
+  const span = el.envBanner.querySelector('span');
+  if (span) span.innerHTML = '<b>' + name + ' 不支持本地 AI 推理</b>：请在 Chrome / Edge / Safari 中打开本页面，或使用 API 模式（需配置 Key）。';
+  el.envBanner.classList.add('show');
+}
+
+/* ---------- 设置面板 ---------- */
+const isLocal = () => state.settings.provider === 'local';
+function setStatus(kind, text) {
+  el.statusDot.className = 'dot' + (kind ? ' ' + kind : '');
+  el.statusText.textContent = text;
+}
+function refreshStatus() {
+  const s = state.settings;
+  if (isLocal()) {
+    const cfg = LOCAL_MODELS[s.localModel] || LOCAL_MODELS[defaults.localModel];
+    if (_localEngine) { setStatus('ok', '本地 AI · ' + cfg.zh + ' 已加载，可离线使用'); }
+    else if (_localEngineLoading) { setStatus('', '本地 AI · 模型加载中…'); }
+    else { setStatus('', '本地 AI · ' + cfg.zh + '（无需 Key，发送时自动下载模型）'); }
+    return;
+  }
+  const p = s.provider === 'openai' ? 'OpenAI 兼容' : 'Gemini';
+  if (!s.key) { setStatus('', '尚未配置 Key（' + p + '）'); }
+  else { setStatus('ok', '已配置 ' + p + ' · ' + (s.provider === 'openai' ? s.model : s.modelGemini) + ' · ' + maskKey(s.key)); }
+}
+function maskKey(k) {
+  if (!k) return '';
+  if (k.length <= 8) return '••••••';
+  return k.slice(0, 4) + '••••' + k.slice(-3);
+}
+function applySettingsToUI() {
+  const s = state.settings;
+  s.provider = s.provider || defaults.provider;
+  const local = isLocal();
+  $$('#segProvider button').forEach(b => b.classList.toggle('active', b.dataset.p === s.provider));
+  if (el.localSection) el.localSection.style.display = local ? '' : 'none';
+  if (el.apiSection) el.apiSection.style.display = local ? 'none' : '';
+  el.inpLocalModel.value = s.localModel || defaults.localModel;
+  const isOpenai = s.provider === 'openai';
+  el.inpBaseUrl.value = s.provider === 'openai' ? (s.baseUrl || '') : (s.baseUrlGemini || '');
+  el.inpBaseUrl.placeholder = isOpenai ? 'https://api.openai.com/v1' : 'https://generativelanguage.googleapis.com/v1beta';
+  el.inpModel.value = s.provider === 'openai' ? (s.model || '') : (s.modelGemini || '');
+  el.inpModel.placeholder = isOpenai ? 'gpt-4o-mini' : 'gemini-2.0-flash';
+  el.inpKey.value = s.key || '';
+  el.inpProxy.value = s.proxy || '';
+  $$('#segCtx button').forEach(b => b.classList.toggle('active', b.dataset.c === String(s.ctx ? 1 : 0)));
+  $$('#segDefaultMode button').forEach(b => b.classList.toggle('active', b.dataset.dm === (s.defaultMode || 'answer')));
+  refreshStatus();
+}
+function collectSettingsFromUI() {
+  const s = state.settings;
+  if (isLocal()) {
+    s.localModel = el.inpLocalModel.value || defaults.localModel;
+  } else {
+    const isOpenai = s.provider === 'openai';
+    if (isOpenai) {
+      s.baseUrl = el.inpBaseUrl.value.trim();
+      s.model = el.inpModel.value.trim();
+    } else {
+      s.baseUrlGemini = el.inpBaseUrl.value.trim();
+      s.modelGemini = el.inpModel.value.trim();
+    }
+    s.key = el.inpKey.value.trim();
+  }
+  s.proxy = el.inpProxy.value.trim();
+  safeStore.set('ays_settings', s);
+  refreshStatus();
+}
+function openDrawer() { el.drawer.classList.add('show'); el.scrim.classList.add('show'); }
+function closeDrawer() { el.drawer.classList.remove('show'); el.scrim.classList.remove('show'); }
+
+/* ---------- 模式切换 ---------- */
+function setMode(mode) {
+  state.mode = mode;
+  $$('#modePill button').forEach(b => {
+    const on = b.dataset.mode === mode;
+    b.classList.toggle('active', on);
+    b.setAttribute('aria-selected', on ? 'true' : 'false');
+  });
+}
+
+/* ---------- 消息渲染 ---------- */
+const ICONS = {
+  user: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+  ai: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.7L19.6 10.6l-5.7 1.9L12 18.2l-1.9-5.7L4.4 10.6l5.7-1.9L12 3z"/><path d="M19 15l.9 2.6 2.6.9-2.6.9L19 22l-.9-2.6-2.6-.9 2.6-.9L19 15z"/></svg>'
+};
+
+function renderWelcome() {
+  el.chat.innerHTML = '<div class="welcome">' +
+    '<div class="hero-mark">' + ICONS.ai + '</div>' +
+    '<h2>上传即解 · 随问随答</h2>' +
+    '<p>拍照上传题目、拖入 PDF，或粘贴网址 / 文本，AI 自动识别并解答。顶部可切换「仅答案」或「答案+过程」。</p>' +
+    '<div class="chips">' +
+      '<button class="chip" data-demo="1">📷 上传图片题目</button>' +
+      '<button class="chip" data-demo="2">🔗 粘贴网址</button>' +
+      '<button class="chip" data-demo="3">⌨️ 直接打字提问</button>' +
+    '</div></div>';
+  $$('.chip', el.chat).forEach(c => c.addEventListener('click', () => {
+    const d = c.dataset.demo;
+    if (d === '1') {
+      if (isLocal()) toast('本地模式不支持识图：请在设置中切换「OpenAI 兼容 / Gemini」后上传图片，或用文本 / 网址', 'info', 4200);
+      else openDrawer();
+    }
+    else if (d === '2') { el.input.focus(); toast('把网址粘贴到输入框，点「链接」按钮抓取内容', 'info', 3400); }
+    else { el.input.focus(); }
+  }));
+}
+
+function showThinking() {
+  const div = document.createElement('div');
+  div.className = 'think'; div.id = 'thinkBox';
+  div.innerHTML = '<span class="spinner"></span><span>正在思考解答…</span>';
+  el.chat.appendChild(div);
+  scrollBottom();
+  return div;
+}
+
+function appendUserMessage(text, attachments, mode) {
+  const div = document.createElement('div');
+  div.className = 'msg user';
+  const atts = (attachments || []).map(a =>
+    '<span class="attach-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>' + esc(a.name) + '</span>'
+  ).join('');
+  const modeBadge = mode === 'process'
+    ? '<span class="badge-mode proc">答案+过程</span>'
+    : '<span class="badge-mode">仅答案</span>';
+  div.innerHTML = '<div class="avatar">' + ICONS.user + '</div>' +
+    '<div class="bubble"><div class="meta">' + modeBadge + '<span>' + new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }) + '</span></div>' +
+    atts + '<div class="md">' + renderMarkdown(text) + '</div></div>';
+  el.chat.appendChild(div);
+  scrollBottom();
+}
+
+function appendAssistantMessage() {
+  const div = document.createElement('div');
+  div.className = 'msg assistant';
+  const msgId = 'assistant-' + uid();
+  div.innerHTML = '<div class="avatar">' + ICONS.ai + '</div>' +
+    '<div class="bubble"><div class="meta"><span>题解助手</span></div><div class="md" id="' + msgId + '"></div>' +
+    '<div class="reply-actions"><button data-ask="detail">🔍 详细讲解</button><button data-ask="short">✂️ 再简洁些</button><button data-ask="similar">💡 同类题</button></div></div>';
+  el.chat.appendChild(div);
+  scrollBottom();
+  return div.querySelector('.md');
+}
+
+function scrollBottom() {
+  el.chat.scrollTop = el.chat.scrollHeight;
+}
+
+function setBusy(busy) {
+  state.busy = busy;
+  if (busy) {
+    el.icSend.style.display = 'none';
+    el.icStop.style.display = 'block';
+    el.btnSend.classList.add('stop');
+    el.btnSend.title = '停止生成';
+  } else {
+    el.icSend.style.display = '';
+    el.icStop.style.display = 'none';
+    el.btnSend.classList.remove('stop');
+    el.btnSend.title = '发送';
+  }
+}
+
+function stopGenerating() {
+  if (state.controller) {
+    state.controller.abort();
+    state.controller = null;
+  }
+  const th = $('#thinkBox');
+  if (th) th.remove();
+  setBusy(false);
+  resetComposer();
+}
+
+/* ---------- 发送主流程 ---------- */
+async function sendMessage(text, attachments, mode) {
+  if (state.busy) { stopGenerating(); return; }
+  if (!text.trim() && (!attachments || !attachments.length)) return;
+  // 等待附件 OCR 完成：用户可能在识别中就直接点发送
+  const atts = attachments || [];
+  if (atts.some(a => a.ocrStatus === 'pending')) {
+    toast('正在识别附件文字，请稍候…', 'info', 2400);
+    await Promise.all(atts.filter(a => a.ocrStatus === 'pending').map(a => a.ocrPromise));
+  }
+  const s = state.settings;
+  if (isLocal() && attachments && attachments.some(a =>
+    ((a.type && a.type.indexOf('image/') === 0) || a.type === 'application/pdf') && !(a.ocrText && a.ocrText.trim())
+  )) {
+    toast('本地 AI 模式下该图片 / PDF 未能识别文字：请改用文本文件或网址，或切换到 API 模式', 'err', 4600);
+    return;
+  }
+  if (!isLocal() && !s.key) {
+    toast('请先在设置中配置 API Key', 'err', 3200);
+    openDrawer();
+    return;
+  }
+
+  // 检查模式
+  mode = mode || state.mode;
+  appendUserMessage(text.trim() || '（题目见附件）', attachments, mode);
+
+  // 上下文：attachments 上的消息只用于本次；历史按设置携带
+  let history = [];
+  if (s.ctx) {
+    history = state.msg
+      .filter(m => m.role)
+      .map(m => ({ role: m.role, content: m.content || '' }))
+      .filter(m => m.content);
+  }
+
+  // 记录用户消息（含附件 OCR 文字，便于后续追问引用）
+  let savedContent = text || '';
+  if (attachments && attachments.length) {
+    const attTexts = attachments.map(a => {
+      if (a.ocrText && a.ocrText.trim()) {
+        return '【附件：' + a.name + '（识别文字）】\n' + a.ocrText.trim();
+      }
+      return '【附件：' + a.name + '】';
+    });
+    savedContent += '\n\n【上传内容】\n' + attTexts.join('\n\n---\n\n');
+  }
+  state.msg.push({ role: 'user', content: savedContent, mode });
+
+  showThinking();
+  setBusy(true);
+
+  const mdEl = appendAssistantMessage();
+  const ctx = { mode, history, text: (text || '').trim(), attachments: attachments || [] };
+  let total = '';
+  let firstChunk = true;
+
+  await streamChat(ctx, (delta) => {
+    if (firstChunk) {
+      const th = $('#thinkBox');
+      if (th) th.remove();
+      firstChunk = false;
+    }
+    total += delta;
+    mdEl.innerHTML = renderMarkdown(total);
+    if (mdEl.querySelector('pre')) scrollBottom(); else scrollBottom();
+  }, (acc, aborted, error) => {
+    const th = $('#thinkBox');
+    if (th) { th.remove(); }
+    if (error) {
+      const isLoc = isLocal();
+      const tip = isLoc
+        ? '本地模式请检查：网络连接（首次需联网下载引擎与模型）、浏览器版本（Chrome / Edge 113+ 且开启硬件加速）、磁盘空间（模型约 1 GB）。部分国产浏览器 / 微信 / App 内置浏览器会限制外部脚本加载。'
+        : '请检查设置中的 API Key / Base URL / 模型名，或稍后重试。';
+      const switchBtn = isLoc
+        ? '<button class="switch-api" style="margin-top:10px;padding:8px 16px;border-radius:10px;border:1px solid var(--line-1);background:var(--bg-3);color:var(--acc-1);font-size:13px;font-weight:600;cursor:pointer" onclick="switchToApiMode()">切换到 API 模式（填 Key 即可用）</button>'
+        : '';
+      const diag = isLoc
+        ? '<details style="margin-top:10px;border:1px solid var(--line-1);border-radius:10px;background:var(--bg-3);padding:8px 12px"><summary style="cursor:pointer;font-size:12px;color:var(--acc-1);font-weight:600">🔧 诊断详情（点击展开）</summary><div style="margin-top:8px;font-size:12px;color:var(--txt-3);line-height:1.7"><p style="margin:0 0 6px"><strong>排查步骤：</strong></p><ol style="margin:0;padding-left:18px"><li>按 <strong>F12</strong> → 切换到 <strong>Console</strong> 标签，看红色报错信息</li><li>确认是否显示 <strong>"TypeError: Failed to fetch dynamically imported module"</strong> 或类似内容</li><li>如果是，说明浏览器拦截了外部 CDN 加载（微信/百度/QQ 等内置浏览器常见）</li><li>如果是网络超时，说明 jsdelivr/esm.sh/unpkg 在你网络下不可达</li><li>解决方案：<strong>切换到 API 模式</strong>（下方按钮），或使用 VPN/代理</li></ol><p style="margin:8px 0 0;color:var(--err)"><strong>当前引擎 CDN 列表：</strong><br>' + WEBLLM_CDNS.map(u => u.split('/')[2]).join(' / ') + '</p></div></details>'
+        : '';
+      mdEl.innerHTML = '<p style="color:var(--err)">⚠️ 出错了：' + esc(error) + '</p><p style="color:var(--txt-3);font-size:12px">' + tip + '</p>' + switchBtn + diag;
+      state.msg.pop(); // 回滚当前用户消息，便于重试
+      setBusy(false);
+      return;
+    }
+    if (aborted) {
+      mdEl.innerHTML = renderMarkdown(total) || '<p style="color:var(--txt-3);font-size:12px">（已停止生成）</p>';
+    } else if (!total && !acc) {
+      mdEl.innerHTML = '<p style="color:var(--txt-3)">（模型未返回内容）</p>';
+    }
+    // 记录助手消息
+    if (acc) state.msg.push({ role: 'assistant', content: acc, mode });
+    setBusy(false);
+  });
+
+  // 收起输入
+  resetComposer();
+}
+
+function resetComposer() {
+  el.input.value = '';
+  autoGrow();
+  pendingFiles = [];
+  renderPendingFiles();
+}
+
+/* ---------- 图片 / PDF OCR（Tesseract.js，本地优先） ---------- */
+const OCR_CDNS = [
+  'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js',
+  'https://fastly.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js',
+  'https://unpkg.com/tesseract.js@5.1.1/dist/tesseract.min.js'
+];
+const PDFJS_CDNS = [
+  'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.min.mjs',
+  'https://unpkg.com/pdfjs-dist@4.10.38/build/pdf.min.mjs'
+];
+let _ocrWorker = null;       // 复用 Tesseract worker
+let _tesseractPromise = null;
+let _pdfjsPromise = null;
+
+function loadScript(src) {
+  return new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = src;
+    s.onload = () => res();
+    s.onerror = () => rej(new Error('加载失败：' + src));
+    document.head.appendChild(s);
+  });
+}
+function base64ToUint8(b64) {
+  const bin = atob(b64);
+  const len = bin.length;
+  const bytes = new Uint8Array(len);
+  for (let i = 0; i < len; i++) bytes[i] = bin.charCodeAt(i);
+  return bytes;
+}
+
+async function getTesseract() {
+  if (_tesseractPromise) return _tesseractPromise;
+  _tesseractPromise = (async () => {
+    if (window.Tesseract) return window.Tesseract;
+    let firstErr = null;
+    for (const cdn of OCR_CDNS) {
+      try {
+        await loadScript(cdn);
+        if (window.Tesseract) return window.Tesseract;
+      } catch (e) { firstErr = e; }
+    }
+    throw new Error('无法加载 OCR 引擎（' + ((firstErr && firstErr.message) || '多个 CDN 均不可达') + '）');
+  })();
+  _tesseractPromise.catch(() => { _tesseractPromise = null; });
+  return _tesseractPromise;
+}
+
+async function getPdfjs() {
+  if (_pdfjsPromise) return _pdfjsPromise;
+  _pdfjsPromise = (async () => {
+    let firstErr = null;
+    for (const src of PDFJS_CDNS) {
+      try {
+        const mod = await import(src);
+        // worker 与主模块保持同源：从同一 CDN 加载
+        const baseSrc = src.split('/').slice(0, -1).join('/') + '/';
+        const workerSrc = baseSrc + 'pdf.worker.min.mjs';
+        try { mod.GlobalWorkerOptions.workerSrc = workerSrc; } catch (e) {}
+        return mod;
+      } catch (e) { firstErr = e; }
+    }
+    throw new Error('无法加载 PDF 解析引擎（' + ((firstErr && firstErr.message) || '多个 CDN 均不可达') + '）');
+  })();
+  _pdfjsPromise.catch(() => { _pdfjsPromise = null; });
+  return _pdfjsPromise;
+}
+
+async function getOcrWorker() {
+  if (_ocrWorker) return _ocrWorker;
+  const T = await getTesseract();
+  // CDN 版本：使用官方 CDN 的语言包与核心（无需本地文件）
+  _ocrWorker = await T.createWorker('chi_sim+eng', 1);
+  return _ocrWorker;
+}
+
+async function ocrImage(dataUrl) {
+  const worker = await getOcrWorker();
+  const { data } = await worker.recognize(dataUrl);
+  return (data && data.text) ? data.text.trim() : '';
+}
+
+async function ocrPdf(dataUrl) {
+  const pdfjs = await getPdfjs();
+  const worker = await getOcrWorker();
+  const doc = await pdfjs.getDocument({ data: base64ToUint8(dataUrl.split(',')[1] || '') }).promise;
+  const total = Math.min(doc.numPages, 20);
+  const texts = [];
+  for (let i = 1; i <= total; i++) {
+    const page = await doc.getPage(i);
+    const vp = page.getViewport({ scale: 2 });
+    const canvas = document.createElement('canvas');
+    canvas.width = vp.width;
+    canvas.height = vp.height;
+    const ctx = canvas.getContext('2d');
+    await page.render({ canvasContext: ctx, viewport: vp }).promise;
+    const { data } = await worker.recognize(canvas.toDataURL('image/png'));
+    if (data && data.text) texts.push(data.text.trim());
+    try { page.cleanup(); } catch (e) {}
+  }
+  return texts.filter(Boolean).join('\n\n');
+}
+
+async function runOcr(att) {
+  att.ocrStatus = 'pending';
+  renderPendingFiles();
+  try {
+    const text = att.type === 'application/pdf' ? await ocrPdf(att.dataUrl) : await ocrImage(att.dataUrl);
+    att.ocrText = text || '';
+    att.ocrStatus = att.ocrText ? 'ok' : 'fail';
+    if (att.ocrText && att.ocrText.length > 40) toast('已识别：“' + att.name + '”（' + att.ocrText.length + ' 字）', 'ok', 2600);
+    else if (att.ocrText) toast('已识别：“' + att.name + '”', 'ok', 2200);
+    else toast('“' + att.name + '”未识别到文字', 'warn', 3200);
+  } catch (e) {
+    console.error('[OCR]', e);
+    att.ocrStatus = 'fail';
+    att.ocrError = (e && e.message) || String(e);
+    toast('“' + att.name + '”识别失败：' + ((e && e.message) || '未知错误') + '（将按原图发送，需多模态模型）', 'warn', 4800);
+  }
+  renderPendingFiles();
+}
+
+/* ---------- 附件 / 输入法 ---------- */
+function renderPendingFiles() {
+  const left = pendingFiles;
+  if (!left.length) {
+    el.attachRow.innerHTML = '';
+    el.btnAttach.classList.remove('has-file');
+    el.btnUrl.classList.remove('has-file');
+    return;
+  }
+  el.btnAttach.classList.add('has-file');
+  el.attachRow.innerHTML = left.map((f, i) => {
+    let ocrTxt = '';
+    if (f.kind !== 'text' && f.kind !== 'url' && f.type && (f.type.startsWith('image/') || f.type === 'application/pdf')) {
+      if (f.ocrStatus === 'pending') ocrTxt = '<i class="ocr"><span class="sp"></span>识别中</i>';
+      else if (f.ocrStatus === 'ok') ocrTxt = '<i class="ocr ok">已识别</i>';
+      else if (f.ocrStatus === 'fail') ocrTxt = '<i class="ocr fail">识别失败</i>';
+    }
+    return '<span class="attach-pill"><span>' + typeIcon(f) + '</span><b>' + esc(f.name) + '</b>' + ocrTxt +
+      '<button class="x" data-i="' + i + '" aria-label="移除"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button></span>';
+  }).join('');
+  el.attachRow.querySelectorAll('.x').forEach(x => x.addEventListener('click', () => {
+    const idx = +x.dataset.i;
+    pendingFiles.splice(idx, 1);
+    renderPendingFiles();
+  }));
+}
+function typeIcon(f) {
+  const t = f.type || f.kind;
+  if (t && t.startsWith('image/')) return '🖼️';
+  if (t === 'application/pdf') return '📄';
+  if (f.kind === 'text') return '📝';
+  if (f.kind === 'url') return '🔗';
+  return '📎';
+}
+
+function autoGrow() {
+  el.input.style.height = 'auto';
+  el.input.style.height = Math.min(el.input.scrollHeight, 150) + 'px';
+}
+
+/* ---------- 文件读取 ---------- */
+function readFileAsDataUrl(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
+function readFileAsText(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result);
+    r.onerror = rej;
+    r.readAsText(file, 'utf-8');
+  });
+}
+const MAX_FILE_MB = 12;
+function addFiles(fileList) {
+  const files = Array.from(fileList || []);
+  for (const f of files) {
+    const mb = f.size / 1024 / 1024;
+    if (mb > MAX_FILE_MB) {
+      toast('文件过大（' + f.name + '，' + mb.toFixed(1) + 'MB），请压缩后上传', 'err', 3600);
+      continue;
+    }
+    if (f.type.startsWith('image/')) {
+      readFileAsDataUrl(f).then(dataUrl => {
+        const att = { name: f.name, type: f.type, dataUrl, size: f.size, ocrStatus: 'pending' };
+        pendingFiles.push(att);
+        renderPendingFiles();
+        att.ocrPromise = runOcr(att); // 自动识别图片文字
+      });
+    } else if (f.type === 'application/pdf') {
+      readFileAsDataUrl(f).then(dataUrl => {
+        const att = { name: f.name, type: 'application/pdf', dataUrl, size: f.size, ocrStatus: 'pending' };
+        pendingFiles.push(att);
+        renderPendingFiles();
+        att.ocrPromise = runOcr(att); // 自动识别 PDF 文字
+      });
+    } else if (f.type.startsWith('text/') || /\.(txt|md|tex|py|java|c|cpp|js|ts|sql|json|csv)$/i.test(f.name)) {
+      readFileAsText(f).then(txt => {
+        pendingFiles.push({ name: f.name, type: f.type, kind: 'text', text: txt.slice(0, 12000), size: f.size });
+        renderPendingFiles();
+      });
+    } else {
+      toast('暂不支持该文件类型：' + f.name, 'err', 3000);
+    }
+  }
+}
+
+/* ---------- URL 抓取 ---------- */
+async function fetchUrlContent(url) {
+  const s = state.settings;
+  const candidates = [];
+  if (s.proxy && s.proxy.trim()) {
+    candidates.push(u => s.proxy.trim().replace(/\{url\}/g, encodeURIComponent(u)));
+  }
+  PROXIES.forEach(fn => candidates.push(fn));
+
+  let lastErr = null;
+  for (const make of candidates) {
+    try {
+      const target = make(url);
+      const ctrl = new AbortController();
+      const to = setTimeout(() => ctrl.abort(), 15000);
+      const resp = await fetch(target, { signal: ctrl.signal, headers: { 'Accept': 'text/html,application/xhtml+xml,text/plain,*/*' } });
+      clearTimeout(to);
+      if (!resp.ok) { lastErr = new Error('HTTP ' + resp.status); continue; }
+      const html = await resp.text();
+      const text = htmlToText(html);
+      if (text.length < 80) { lastErr = new Error('抓取内容过短'); continue; }
+      return text;
+    } catch (e) {
+      lastErr = e;
+    }
+  }
+  throw lastErr || new Error('所有代理均失败');
+}
+
+function htmlToText(html) {
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  doc.querySelectorAll('script,style,noscript,iframe,svg,header,footer,nav,form').forEach(n => n.remove());
+  let body = doc.body ? doc.body.innerText || doc.body.textContent : '';
+  body = body.replace(/\n{3,}/g, '\n\n').trim();
+  return body.slice(0, 14000);
+}
+
+async function handleUrl(url) {
+  if (!/^https?:\/\//i.test(url)) {
+    toast('请输入以 http:// 或 https:// 开头的网址', 'err', 3000);
+    return;
+  }
+  toast('正在抓取网页内容…', 'info', 800);
+  try {
+    const content = await fetchUrlContent(url);
+    pendingFiles.push({ name: url.replace(/^https?:\/\//i, '').slice(0, 40), kind: 'url', text: content, url });
+    renderPendingFiles();
+    toast('网址内容已抓取，可附加发送（或直接点击发送）', 'ok', 3000);
+  } catch (e) {
+    toast('抓取失败：' + ((e && e.message) || e), 'err', 4200);
+  }
+}
+
+/* ---------- 事件绑定 ---------- */
+function bindEvents() {
+  // 模式切换
+  $$('#modePill button').forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
+
+  // 输入框自动增高 & 回车发送
+  el.input.addEventListener('input', autoGrow);
+  el.input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      const v = el.input.value.trim();
+      if ((v || pendingFiles.length) && !state.busy) {
+        if (pendingFiles.some(f => f.kind === 'url') && !v) {
+          // URL 已抓取，直接发送
+          sendMessage('请解答以下网页中的题目：\n' + (pendingFiles.find(f => f.kind === 'url') ? pendingFiles.find(f => f.kind === 'url').text : ''), [], state.mode);
+        } else {
+          sendMessage(v, pendingFiles.slice(), state.mode);
+        }
+      }
+    }
+  });
+
+  // 发送按钮
+  el.btnSend.addEventListener('click', () => {
+    if (state.busy) { stopGenerating(); return; }
+    const v = el.input.value.trim();
+    if (pendingFiles.some(f => f.kind === 'url') && !v) {
+      const u = pendingFiles.find(f => f.kind === 'url');
+      sendMessage('请解答以下网页中的题目：\n' + u.text, [], state.mode);
+      return;
+    }
+    sendMessage(v, pendingFiles.slice(), state.mode);
+  });
+
+  // 附件按钮（创建隐藏 file input）
+  el.btnAttach.addEventListener('click', () => {
+    const fi = document.createElement('input');
+    fi.type = 'file';
+    fi.multiple = true;
+    fi.accept = 'image/*,application/pdf,.txt,.md,.tex,.py,.java,.c,.cpp,.js,.ts,.sql,.json,.csv';
+    fi.addEventListener('change', () => { addFiles(fi.files); fi.remove(); });
+    fi.click();
+  });
+
+  // 拖拽文件
+  const appEl = $('#app');
+  appEl.addEventListener('dragover', (e) => { e.preventDefault(); el.composer.style.borderColor = 'var(--acc-1)'; });
+  appEl.addEventListener('dragleave', (e) => { if (e.target === appEl) el.composer.style.borderColor = ''; });
+  appEl.addEventListener('drop', (e) => {
+    e.preventDefault(); el.composer.style.borderColor = '';
+    if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) addFiles(e.dataTransfer.files);
+  });
+
+  // URL 按钮：把输入框内容当作 URL
+  el.btnUrl.addEventListener('click', () => {
+    const v = el.input.value.trim();
+    if (!v) { toast('请先在输入框粘贴网址，再点此按钮抓取', 'info', 3200); el.input.focus(); return; }
+    handleUrl(v);
+  });
+
+  // 设置抽屉
+  el.btnSettings.addEventListener('click', openDrawer);
+  el.btnCloseDrawer.addEventListener('click', closeDrawer);
+  el.scrim.addEventListener('click', closeDrawer);
+
+  // 设置交互
+  $$('#segProvider button').forEach(b => b.addEventListener('click', () => {
+    const p = b.dataset.p;
+    collectSettingsFromUI();
+    state.settings.provider = p;
+    safeStore.set('ays_settings', state.settings);
+    applySettingsToUI();
+  }));
+  el.inpLocalModel.addEventListener('change', () => {
+    collectSettingsFromUI();
+    if (_localEngine) {
+      _localEngine = null;
+      toast('已切换本地模型，下次发送时将重新加载', 'info', 2800);
+    }
+    refreshStatus();
+  });
+  el.mpClose.addEventListener('click', hideModelProgress);
+  if (el.ebSwitch) el.ebSwitch.addEventListener('click', () => { switchToApiMode(); el.envBanner.classList.remove('show'); });
+  if (el.ebDismiss) el.ebDismiss.addEventListener('click', () => el.envBanner.classList.remove('show'));
+  if (el.inpPreset) {
+    el.inpPreset.addEventListener('change', () => {
+      const v = el.inpPreset.value;
+      const presets = {
+        zhipu: { baseUrl: 'https://open.bigmodel.cn/api/paas/v4', model: 'glm-4-flash' },
+        qianfan: { baseUrl: 'https://qianfan.baidubce.com/v2', model: 'ERNIE-Speed-128K' },
+        silicon: { baseUrl: 'https://api.siliconflow.cn/v1', model: 'deepseek-ai/DeepSeek-V2.5' }
+      };
+      if (presets[v]) {
+        el.inpBaseUrl.value = presets[v].baseUrl;
+        el.inpModel.value = presets[v].model;
+        state.settings.provider = 'openai';
+        collectSettingsFromUI();
+      }
+    });
+  }
+  [el.inpBaseUrl, el.inpModel, el.inpKey, el.inpProxy].forEach(inp => inp.addEventListener('change', collectSettingsFromUI));
+  el.inpKey.addEventListener('input', debounce(collectSettingsFromUI, 400));
+  $( '#segCtx' ).addEventListener('click', (e) => {
+    const b = e.target.closest('button'); if (!b) return;
+    state.settings.ctx = b.dataset.c === '1';
+    $$('#segCtx button').forEach(x => x.classList.toggle('active', x === b));
+    safeStore.set('ays_settings', state.settings);
+  });
+  $('#segDefaultMode').addEventListener('click', (e) => {
+    const b = e.target.closest('button'); if (!b) return;
+    state.settings.defaultMode = b.dataset.dm;
+    safeStore.set('ays_settings', state.settings);
+    $$('#segDefaultMode button').forEach(x => x.classList.toggle('active', x === b));
+    setMode(state.settings.defaultMode);
+    toast('默认模式已设为「' + (state.settings.defaultMode === 'answer' ? '仅答案' : '答案+过程') + '」', 'ok', 1800);
+  });
+  el.btnTest.addEventListener('click', testConnection);
+
+  // 代理格式帮助
+  el.btnProxyMacro.addEventListener('click', () => {
+    confirmDialog('Base URL 填写格式',
+      '<div style="font-size:12.5px;line-height:1.8;color:var(--txt-2)">' +
+      '<p><b style="color:var(--txt-1)">OpenAI 兼容（含千帆 / 通义 / 智谱 / DeepSeek 等）</b><br>填到 <code>/v1</code> 或厂商文档要求的路径。<br>例：<code>https://qianfan.baidubce.com/v2</code>（千帆）、<code>https://api.deepseek.com/v1</code>、<code>https://dashscope.aliyuncs.com/compatible-mode/v1</code></p>' +
+      '<p><b style="color:var(--txt-1)">Gemini</b><br>Base URL 栏填 <code>https://generativelanguage.googleapis.com/v1beta</code>，模型名如 <code>gemini-2.0-flash</code>。</p>' +
+      '<p>本地服务可用 <code>http://127.0.0.1:8000/v1</code>（如 one-api / new-api / LM Studio）。</p></div>');
+  });
+
+  // 追问快捷操作
+  el.chat.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-ask]');
+    if (!btn) return;
+    const ask = btn.dataset.ask;
+    let q = '';
+    if (ask === 'detail') q = '可以详细讲解这道题的解题思路吗？请逐步说明。';
+    else if (ask === 'short') q = '能否用更简洁的话重新回答一下？';
+    else if (ask === 'similar') q = '请出一道类似的练习题，并给出参考答案。';
+    el.input.value = q;
+    autoGrow();
+    el.input.focus();
+    toast('已填入追问，回车即可发送', 'info', 2000);
+  });
+
+  // 弹层
+  el.modalOk.addEventListener('click', () => closeModal(true));
+  el.modalCancel.addEventListener('click', () => closeModal(false));
+  el.modalScrim.addEventListener('click', (e) => { if (e.target === el.modalScrim) closeModal(false); });
+
+  // 移动端键盘适配
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', () => {
+      document.body.style.height = window.visualViewport.height + 'px';
+    });
+  }
+
+  // 初始聚焦
+  setTimeout(() => { if (screen.width > 720) el.input.focus(); }, 300);
+}
+
+/* ---------- 初始化 ---------- */
+function init() {
+  applySettingsToUI();
+  const dm = state.settings.defaultMode || 'answer';
+  setMode(dm);
+  showEnvBannerIfNeeded();
+  renderWelcome();
+  bindEvents();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+
+
+/* ========== 指南页 JS ========== */
+// 滚动显现由首页 JS 中的 observer 统一处理
+
+
+// 初始化
+document.addEventListener('DOMContentLoaded', initView);
+</script>
+</body>
+</html>
