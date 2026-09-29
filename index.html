@@ -2321,8 +2321,11 @@ async function getLocalEngine() {
     _localEngineLoading = false; hideModelProgress();
     const m = (e && e.message) || String(e);
     let tip = '';
-    if (/Failed to fetch|fetch fail|NetworkError|timeout/i.test(m)) tip = '（网络下载模型权重失败，请检查网络后重试）';
-    else if (/WebGPU|gpu|adapter/i.test(m)) tip = '（WebGPU 初始化失败，请确认浏览器版本及硬件加速开启情况）';
+    if (/Failed to fetch|fetch fail|NetworkError|timeout/i.test(m)) {
+      tip = '（国内网络通常无法访问模型下载服务器，建议切换到 API 模式使用）';
+    } else if (/WebGPU|gpu|adapter/i.test(m)) {
+      tip = '（WebGPU 初始化失败，请确认浏览器版本及硬件加速开启情况）';
+    }
     throw new Error('本地模型加载失败：' + m + tip);
   }
   _localEngineLoading = false;
@@ -2660,7 +2663,7 @@ async function sendMessage(text, attachments, mode) {
     if (error) {
       const isLoc = isLocal();
       const tip = isLoc
-        ? '本地模式请检查：网络连接（首次需联网下载引擎与模型）、浏览器版本（Chrome / Edge 113+ 且开启硬件加速）、磁盘空间（模型约 1 GB）。部分国产浏览器 / 微信 / App 内置浏览器会限制外部脚本加载。'
+        ? '【国内网络限制】本地模式需要从境外服务器下载约 1GB 模型权重，国内网络（尤其是手机流量/WiFi）通常无法访问。建议切换到 API 模式，使用智谱AI免费模型（无需翻墙）。'
         : '请检查设置中的 API Key / Base URL / 模型名，或稍后重试。';
       const switchBtn = isLoc
         ? '<button class="switch-api" style="margin-top:10px;padding:8px 16px;border-radius:10px;border:1px solid var(--line-1);background:var(--bg-3);color:var(--acc-1);font-size:13px;font-weight:600;cursor:pointer" onclick="switchToApiMode()">切换到 API 模式（填 Key 即可用）</button>'
