@@ -751,16 +751,12 @@ input:focus,select:focus{border-color:rgba(34,211,238,.5);box-shadow:0 0 0 3px r
 }
 .modal-scrim.show{display:flex}
 .modal{
-  width:min(560px,100%);background:var(--bg-1);border:1px solid var(--line-1);
+  width:min(400px,100%);background:var(--bg-1);border:1px solid var(--line-1);
   border-radius:16px;padding:20px;box-shadow:var(--shadow-1);animation:fadeUp .3s ease both;
-  max-height:86vh;display:flex;flex-direction:column;
 }
-.modal h4{font-size:15px;font-weight:650;margin-bottom:8px;flex:none}
+.modal h4{font-size:15px;font-weight:650;margin-bottom:8px}
 .modal p{font-size:13px;color:var(--txt-2);line-height:1.7;margin-bottom:18px}
-#modalText{overflow-y:auto;flex:1;min-height:0;scrollbar-width:thin}
-#modalText::-webkit-scrollbar{width:6px}
-#modalText::-webkit-scrollbar-thumb{background:var(--line-1);border-radius:3px}
-.modal-actions{display:flex;gap:10px;justify-content:flex-end;flex:none;margin-top:14px}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end}
 .modal-actions button{padding:8px 16px;border-radius:9px;font-size:13.5px;font-weight:600}
 .modal-actions .cancel{background:var(--bg-2);border:1px solid var(--line-1);color:var(--txt-2)}
 .modal-actions .ok{background:var(--err);color:#fff}
@@ -1385,29 +1381,26 @@ img{max-width:100%;display:block}
 
     <div class="field-block" id="apiSection" style="display:none">
       <div class="field">
-        <label>步骤 ①：选择免费模型（已默认选好）</label>
+        <label>免费模型预设 <span style="font-weight:400">（选好后自动填URL和模型）</span></label>
         <select id="inpPreset">
           <option value="">-- 手动填写 --</option>
-          <option value="zhipu" selected>智谱 AI · GLM-4-Flash（永久免费 / 注册即送额度）</option>
+          <option value="zhipu">智谱 AI · GLM-4-Flash（永久免费 / 注册即送额度）</option>
           <option value="qianfan">百度千帆 · ERNIE-Speed（永久免费 / 需创建应用）</option>
           <option value="silicon">硅基流动 · DeepSeek-V2.5（注册送2000万Token）</option>
         </select>
       </div>
       <div class="field">
-        <label id="lblBaseUrl">API Base URL <span style="font-weight:400">（已自动填写）</span></label>
-        <input type="text" id="inpBaseUrl" placeholder="https://api.openai.com/v1" autocapitalize="off" spellcheck="false" value="https://open.bigmodel.cn/api/paas/v4">
+        <label id="lblBaseUrl">API Base URL</label>
+        <input type="text" id="inpBaseUrl" placeholder="https://api.openai.com/v1" autocapitalize="off" spellcheck="false">
       </div>
       <div class="field">
-        <label>模型名称 <span style="font-weight:400">（已自动填写）</span></label>
-        <input type="text" id="inpModel" placeholder="gpt-4o-mini / gemini-2.0-flash" autocapitalize="off" spellcheck="false" value="glm-4-flash">
+        <label>模型名称 <span style="font-weight:400">（Model）</span></label>
+        <input type="text" id="inpModel" placeholder="gpt-4o-mini / gemini-2.0-flash" autocapitalize="off" spellcheck="false">
       </div>
       <div class="field">
-        <label>步骤 ②：粘贴 API Key <span style="font-weight:400; color: var(--err)">（必填）</span></label>
+        <label>API Key</label>
         <input type="password" id="inpKey" placeholder="sk-…" autocomplete="off" spellcheck="false">
-        <span class="hint">没有 Key？<a href="https://open.bigmodel.cn/" target="_blank" style="color:var(--acc-1)">点击注册智谱AI（免费）</a> → 创建 API Key → 复制粘贴到这里</span>
-      </div>
-      <div class="field" style="background:rgba(59,130,246,0.08); border:1px solid rgba(59,130,246,0.2); border-radius:10px; padding:10px 12px; margin-top:8px">
-        <span class="hint" style="color:var(--txt-2); line-height:1.6"><b style="color:var(--txt-1)">只需两步：</b><br>1️⃣ 上方下拉框已选好「智谱AI」（永久免费）<br>2️⃣ 在「API Key」框粘贴你的 Key（<a href="https://open.bigmodel.cn/" target="_blank" style="color:var(--acc-1)">点击这里免费获取</a>）<br>💡 Key 只保存在你的手机/电脑里，不会上传到任何地方</span>
+        <span class="hint">Key 仅保存在本机浏览器中，不会上传到任何服务器。部分平台免Key也可用。</span>
       </div>
       <button class="ghost-btn" id="btnProxyMacro" type="button">支持 Azure / 千帆 / 本地服务 · 点击查看格式</button>
     </div>
@@ -1461,7 +1454,7 @@ img{max-width:100%;display:block}
 <div class="modal-scrim" id="modalScrim">
   <div class="modal">
     <h4 id="modalTitle">提示</h4>
-    <div id="modalText"></div>
+    <p id="modalText"></p>
     <div class="modal-actions">
       <button type="button" class="cancel" id="modalCancel">取消</button>
       <button type="button" class="ok" id="modalOk">确认</button>
@@ -1785,117 +1778,11 @@ const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;'
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 
 function switchToApiMode() {
-  openDrawer();
   state.settings.provider = 'openai';
   safeStore.set('ays_settings', state.settings);
   if (typeof applySettingsToUI === 'function') applySettingsToUI();
-  if (el.inpPreset) {
-    el.inpPreset.value = 'zhipu';
-    el.inpPreset.dispatchEvent(new Event('change'));
-  }
-  setTimeout(() => { if (el.inpKey) el.inpKey.focus(); }, 300);
-}
-
-function copyGuideLink(url) {
-  const done = () => toast('链接已复制，请在浏览器打开', 'ok', 2400);
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(url).then(done).catch(() => fallbackCopy(url, done));
-  } else {
-    fallbackCopy(url, done);
-  }
-}
-function fallbackCopy(text, done) {
-  const ta = document.createElement('textarea');
-  ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
-  document.body.appendChild(ta); ta.select();
-  try { document.execCommand('copy'); done(); } catch (e) { toast('复制失败，请手动复制链接', 'err', 2400); }
-  ta.remove();
-}
-
-function showSetupGuide() {
-  const platformCard = (emoji, color, name, badge, url, steps, faq) =>
-    '<div style="margin-bottom:16px;padding:14px;background:rgba(255,255,255,0.03);border:1px solid var(--line-1);border-radius:12px">' +
-    '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap">' +
-      '<h5 style="margin:0;font-size:14px;color:' + color + '">' + emoji + ' ' + name + '</h5>' +
-      '<span style="font-size:11px;padding:2px 8px;border-radius:20px;' +
-        'background:rgba(59,130,246,0.12);color:var(--acc-1);border:1px solid rgba(59,130,246,0.25)">' + badge + '</span>' +
-    '</div>' +
-    '<ol style="margin:0 0 10px;padding-left:20px;font-size:12.5px;color:var(--txt-2);line-height:1.95">' +
-      steps.map(s => '<li>' + s + '</li>').join('') +
-    '</ol>' +
-    '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">' +
-      '<button type="button" onclick="copyGuideLink(\'' + url + '\')" style="padding:6px 12px;border-radius:8px;border:1px solid var(--line-1);background:var(--bg-2);color:var(--txt-2);font-size:12px;font-weight:600;cursor:pointer">📋 复制注册链接</button>' +
-      '<a href="' + url + '" target="_blank" rel="noopener" style="padding:6px 12px;border-radius:8px;background:' + color + ';color:#fff;font-size:12px;font-weight:600;text-decoration:none">🚀 立即前往注册</a>' +
-    '</div>' +
-    '<details style="margin-top:10px;font-size:12px;color:var(--txt-3)">' +
-      '<summary style="cursor:pointer;color:var(--txt-2);font-weight:600">❓ 常见问题</summary>' +
-      '<div style="margin-top:8px;padding:10px;background:rgba(0,0,0,0.18);border-radius:8px;line-height:1.9">' + faq + '</div>' +
-    '</details>' +
-    '</div>';
-
-  const guideHtml =
-    '<div style="max-height:56vh;overflow-y:auto;padding-right:6px">' +
-    '<p style="margin:0 0 12px;font-size:12.5px;color:var(--txt-2);line-height:1.7">' +
-    '点击下方任一平台复制注册链接，按步骤拿到 <b style="color:var(--acc-1)">API Key</b> 后，粘贴回本页设置项即可开始使用。👇' +
-    '</p>' +
-    platformCard('📘', 'var(--acc-1)', '智谱 AI', '推荐 · GLM-4-Flash 永久免费',
-      'https://open.bigmodel.cn/',
-      [
-        '打开链接，点击右上角「登录」，用手机号注册（约 1 分钟）',
-        '登录后点击头像 →「API Keys」→「添加新的 API Key」',
-        '为新 Key 命名（如 zhida-ai）后创建',
-        '复制生成的 <code style="background:var(--bg-3);padding:1px 5px;border-radius:4px;font-size:11.5px">sk-</code> 开头字符串',
-        '粘贴回本页「API Key」输入框，选智谱预设即可'
-      ],
-      '<b>免费额度：</b>GLM-4-Flash 调用永久免费，注册送 1000 万 tokens；<br>' +
-      '<b>Key 找不到？</b>在 open.bigmodel.cn 首页左侧菜单点「API Keys」；<br>' +
-      '<b>Key 泄露了？</b>回到该页面点「删除」，再重新创建一个即可。') +
-    platformCard('📗', '#10b981', '百度千帆', '永久免费 · 国内直连',
-      'https://console.bce.baidu.com/',
-      [
-        '打开链接，用百度账号登录（支持手机号注册）',
-        '顶部搜索或直接进入「千帆 ModelBuilder」控制台',
-        '点击「应用接入」→「创建应用」',
-        '创建完成后复制页面上显示的 <b>API Key</b> 和 <b>Secret Key</b>',
-        '粘贴回本页「API Key」框，预设选「百度千帆」'
-      ],
-      '<b>免费额度：</b>ERNIE 系列模型对新用户赠送免费 tokens，够日常使用；<br>' +
-      '<b>两个 Key 都要吗？</b>只需把 API Key 填到本页，页面会自动处理；<br>' +
-      '<b>调用报错？</b>确认应用已「上线」而非仅「草稿」。') +
-    platformCard('📕', '#8b5cf6', '硅基流动', '注册送 2000 万 tokens',
-      'https://cloud.siliconflow.cn/',
-      [
-        '打开链接，手机号或邮箱注册账号',
-        '进入控制台，左侧菜单点「API 密钥」',
-        '点击「创建新密钥」，命名后复制生成的一串密钥',
-        '密钥以 <code style="background:var(--bg-3);padding:1px 5px;border-radius:4px;font-size:11.5px">sk-</code> 开头',
-        '粘贴回本页，预设选「硅基流动」即可调用多款开源模型'
-      ],
-      '<b>免费额度：</b>注册赠送 2000 万 tokens，支持 DeepSeek、Qwen 等开源模型；<br>' +
-      '<b>模型选哪个？</b>默认已内置免费模型，无需手动配置；<br>' +
-      '<b>Key 泄露了？</b>在「API 密钥」页删除重建即可。') +
-    '<div style="padding:12px;border-radius:12px;background:rgba(251,191,36,0.07);border:1px solid rgba(251,191,36,0.25)">' +
-      '<p style="margin:0;font-size:12.5px;color:var(--txt-2);line-height:1.8">' +
-      '🛡️ <b style="color:#fbbf24">安全提醒：</b>API Key 相当于账号密码，<b>不要截图发到群聊</b>，也不要发给任何人。' +
-      '本页面在浏览器本地运行，Key 只保存在你自己的浏览器中，不会上传到任何服务器。' +
-      '</p>' +
-    '</div>' +
-    '</div>';
-
-  confirmDialog('如何获取免费 API Key？', guideHtml, {
-    okText: '✅ 我已拿到 Key，去配置',
-    cancelText: '稍后再说'
-  }).then(() => {
-    openDrawer();
-    state.settings.provider = 'openai';
-    safeStore.set('ays_settings', state.settings);
-    if (typeof applySettingsToUI === 'function') applySettingsToUI();
-    if (el.inpPreset) {
-      el.inpPreset.value = 'zhipu';
-      el.inpPreset.dispatchEvent(new Event('change'));
-    }
-    setTimeout(() => { if (el.inpKey) el.inpKey.focus(); }, 300);
-  });
+  toast('已切换到 OpenAI 兼容模式：请在设置中配置 API Key', 'info', 4200);
+  openDrawer();
 }
 
 function debounce(fn, ms) {
@@ -1948,15 +1835,11 @@ function toast(msg, type = 'info', ms = 2600) {
 }
 
 let modalResolve = null;
-function confirmDialog(title, text, opts) {
-  opts = opts || {};
+function confirmDialog(title, text) {
   return new Promise((resolve) => {
     modalResolve = resolve;
     $('#modalTitle').textContent = title;
     $('#modalText').innerHTML = text;
-    $('#modalOk').textContent = opts.okText || '确认';
-    $('#modalCancel').textContent = opts.cancelText || '取消';
-    $('#modalCancel').style.display = opts.hideCancel ? 'none' : '';
     $('#modalScrim').classList.add('show');
   });
 }
@@ -1967,18 +1850,20 @@ function closeModal(val) {
 
 /* ---------- 应用状态 ---------- */
 const defaults = {
-  provider: 'zhipu',
-  localModel: 'qwen2.5-0.5b', // 默认使用已下载的0.5B模型
-  baseUrl: 'https://api.openai.com/v1',
+  provider: 'openai',           // 默认在线 API 模式：手机/微信等浏览器无需本地推理，即开即用
+  localModel: 'qwen2.5-0.5b',   // 本地模式可选手动切换
+  baseUrl: 'https://open.bigmodel.cn/api/paas/v4',   // 智谱 AI（免费 Key 注册即得）
   baseUrlGemini: 'https://generativelanguage.googleapis.com/v1beta',
-  model: 'gpt-4o-mini',
+  model: 'glm-4v-flash',        // 免费视觉模型：可直接看懂图片题目，无需本地 OCR
   modelGemini: 'gemini-2.0-flash',
   key: '',
   ctx: true,
   defaultMode: 'answer',
   proxy: ''
 };
-const state = {
+/* 手机 / 受限浏览器自动进入智谱 API 模式：本地 WebGPU 推理不可用时，回退为在线识图 */
+const _webgpuOk = typeof navigator !== 'undefined' && !!navigator.gpu;
+let state = {
   settings: Object.assign({}, defaults, safeStore.get('ays_settings', {})),
   mode: safeStore.get('ays_default_mode', defaults.defaultMode) || defaults.defaultMode,
   msg: [],            // 会话历史 {role, content, attachments, mode}
@@ -1986,6 +1871,15 @@ const state = {
   busy: false,
   urlPending: ''      // 待确认的抓取 URL
 };
+if (state.settings.provider === 'local' && !_webgpuOk) {
+  // 本机不支持 WebGPU（手机、微信内置浏览器等）但保留了本地模式设置 → 自动切智谱 API
+  state.settings.provider = 'openai';
+  state.settings.baseUrl = state.settings.baseUrl || defaults.baseUrl;
+  state.settings.model = (state.settings.model && state.settings.model !== 'gpt-4o-mini')
+    ? state.settings.model : defaults.model;
+  state.settings.localModel = state.settings.localModel || defaults.localModel;
+  safeStore.set('ays_settings', state.settings);
+}
 let pendingFiles = []; // {name, type, dataUrl, text?}
 
 const PROXIES = [
@@ -2438,11 +2332,8 @@ async function getLocalEngine() {
     _localEngineLoading = false; hideModelProgress();
     const m = (e && e.message) || String(e);
     let tip = '';
-    if (/Failed to fetch|fetch fail|NetworkError|timeout/i.test(m)) {
-      tip = '（国内网络通常无法访问模型下载服务器，建议切换到 API 模式使用）';
-    } else if (/WebGPU|gpu|adapter/i.test(m)) {
-      tip = '（WebGPU 初始化失败，请确认浏览器版本及硬件加速开启情况）';
-    }
+    if (/Failed to fetch|fetch fail|NetworkError|timeout/i.test(m)) tip = '（网络下载模型权重失败，请检查网络后重试）';
+    else if (/WebGPU|gpu|adapter/i.test(m)) tip = '（WebGPU 初始化失败，请确认浏览器版本及硬件加速开启情况）';
     throw new Error('本地模型加载失败：' + m + tip);
   }
   _localEngineLoading = false;
@@ -2528,6 +2419,8 @@ function detectRestrictedBrowser() {
 }
 
 function showEnvBannerIfNeeded() {
+  // 仅在本地 AI 模式下需要检测浏览器限制；API 模式（默认）所有浏览器均可使用
+  if (state.settings.provider !== 'local') return;
   const d = detectRestrictedBrowser();
   if (!d.restricted && d.supported) return; // 正常浏览器不显示
   if (!el.envBanner) return;
@@ -2541,6 +2434,14 @@ function showEnvBannerIfNeeded() {
 
 /* ---------- 设置面板 ---------- */
 const isLocal = () => state.settings.provider === 'local';
+/* 当前模型是否支持直接看图（多模态视觉）：
+   - 是：上传图片直接发给模型识别，跳过本地 OCR（手机端更稳更快）
+   - 否：走本地 Tesseract OCR 提取文字后再发给纯文本模型 */
+function isVisionModel() {
+  if (isLocal()) return false;
+  const m = (state.settings.provider === 'openai' ? state.settings.model : state.settings.modelGemini) || '';
+  return /4v|vision|vl-|vl$|gemini|gpt-4o|gpt-4\.1|claude|qwen2?-?\s*vl|internvl|deepseek-vl|glm-4v/i.test(m);
+}
 function setStatus(kind, text) {
   el.statusDot.className = 'dot' + (kind ? ' ' + kind : '');
   el.statusText.textContent = text;
@@ -2621,11 +2522,6 @@ const ICONS = {
 };
 
 function renderWelcome() {
-  const hasKey = !!(state.settings.key || '').trim();
-  const needKey = !hasKey; // 只要没有Key就显示引导
-  const keyHint = needKey
-    ? '<div style="margin-top:16px;padding:14px 16px;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.3);border-radius:12px;text-align:left"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:18px">🔑</span><span style="font-weight:600;color:var(--acc-1);font-size:14px">首次使用，只需 30 秒配置</span></div><p style="margin:0;font-size:13px;color:var(--txt-2);line-height:1.6">智答AI 使用智谱 AI 永久免费的 GLM-4-Flash 模型。点击下方按钮，1 分钟注册获取 API Key，即可开始使用。</p><button onclick="showSetupGuide()" style="margin-top:10px;padding:8px 18px;border-radius:10px;border:none;background:var(--acc-1);color:#fff;font-size:13px;font-weight:600;cursor:pointer">⚡ 获取免费 API Key</button></div>'
-    : '';
   el.chat.innerHTML = '<div class="welcome">' +
     '<div class="hero-mark">' + ICONS.ai + '</div>' +
     '<h2>上传即解 · 随问随答</h2>' +
@@ -2634,11 +2530,13 @@ function renderWelcome() {
       '<button class="chip" data-demo="1">📷 上传图片题目</button>' +
       '<button class="chip" data-demo="2">🔗 粘贴网址</button>' +
       '<button class="chip" data-demo="3">⌨️ 直接打字提问</button>' +
-    '</div>' + keyHint + '</div>';
+    '</div></div>';
   $$('.chip', el.chat).forEach(c => c.addEventListener('click', () => {
     const d = c.dataset.demo;
-    if (d === '1') {
+if (d === '1') {
       if (isLocal()) toast('本地模式不支持识图：请在设置中切换「OpenAI 兼容 / Gemini」后上传图片，或用文本 / 网址', 'info', 4200);
+      else if (!state.settings.key) { toast('请先配置 API Key 后再上传图片（右上角设置，智谱注册免费）', 'info', 4200); openDrawer(); }
+      else if (el.btnAttach) el.btnAttach.click(); // 手机端直接弹出拍照 / 相册选择
       else openDrawer();
     }
     else if (d === '2') { el.input.focus(); toast('把网址粘贴到输入框，点「链接」按钮抓取内容', 'info', 3400); }
@@ -2785,7 +2683,7 @@ async function sendMessage(text, attachments, mode) {
     if (error) {
       const isLoc = isLocal();
       const tip = isLoc
-        ? '【国内网络限制】本地模式需要从境外服务器下载约 1GB 模型权重，国内网络（尤其是手机流量/WiFi）通常无法访问。建议切换到 API 模式，使用智谱AI免费模型（无需翻墙）。'
+        ? '本地模式请检查：网络连接（首次需联网下载引擎与模型）、浏览器版本（Chrome / Edge 113+ 且开启硬件加速）、磁盘空间（模型约 1 GB）。部分国产浏览器 / 微信 / App 内置浏览器会限制外部脚本加载。'
         : '请检查设置中的 API Key / Base URL / 模型名，或稍后重试。';
       const switchBtn = isLoc
         ? '<button class="switch-api" style="margin-top:10px;padding:8px 16px;border-radius:10px;border:1px solid var(--line-1);background:var(--bg-3);color:var(--acc-1);font-size:13px;font-weight:600;cursor:pointer" onclick="switchToApiMode()">切换到 API 模式（填 Key 即可用）</button>'
@@ -2952,9 +2850,10 @@ function renderPendingFiles() {
   }
   el.btnAttach.classList.add('has-file');
   el.attachRow.innerHTML = left.map((f, i) => {
-    let ocrTxt = '';
+let ocrTxt = '';
     if (f.kind !== 'text' && f.kind !== 'url' && f.type && (f.type.startsWith('image/') || f.type === 'application/pdf')) {
       if (f.ocrStatus === 'pending') ocrTxt = '<i class="ocr"><span class="sp"></span>识别中</i>';
+      else if (f.ocrStatus === 'vision') ocrTxt = '<i class="ocr ok">AI 识图</i>';
       else if (f.ocrStatus === 'ok') ocrTxt = '<i class="ocr ok">已识别</i>';
       else if (f.ocrStatus === 'fail') ocrTxt = '<i class="ocr fail">识别失败</i>';
     }
@@ -3007,19 +2906,25 @@ function addFiles(fileList) {
       toast('文件过大（' + f.name + '，' + mb.toFixed(1) + 'MB），请压缩后上传', 'err', 3600);
       continue;
     }
-    if (f.type.startsWith('image/')) {
+if (f.type.startsWith('image/')) {
       readFileAsDataUrl(f).then(dataUrl => {
         const att = { name: f.name, type: f.type, dataUrl, size: f.size, ocrStatus: 'pending' };
         pendingFiles.push(att);
         renderPendingFiles();
-        att.ocrPromise = runOcr(att); // 自动识别图片文字
+        if (isVisionModel()) {
+          // 视觉模型直接看图：无需本地 OCR，立即就绪（手机端不再依赖 Tesseract 下载）
+          att.ocrStatus = 'vision';
+          renderPendingFiles();
+        } else {
+          att.ocrPromise = runOcr(att); // 纯文本模型：本地 OCR 提取文字
+        }
       });
     } else if (f.type === 'application/pdf') {
       readFileAsDataUrl(f).then(dataUrl => {
         const att = { name: f.name, type: 'application/pdf', dataUrl, size: f.size, ocrStatus: 'pending' };
         pendingFiles.push(att);
         renderPendingFiles();
-        att.ocrPromise = runOcr(att); // 自动识别 PDF 文字
+        att.ocrPromise = runOcr(att); // PDF 转页图后识别文字
       });
     } else if (f.type.startsWith('text/') || /\.(txt|md|tex|py|java|c|cpp|js|ts|sql|json|csv)$/i.test(f.name)) {
       readFileAsText(f).then(txt => {
